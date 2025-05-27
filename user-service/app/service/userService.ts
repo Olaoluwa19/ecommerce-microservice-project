@@ -35,7 +35,7 @@ export class UserService {
       salt: salt,
     });
 
-    return SuccessResponse(data);
+    return SuccessResponse({});
   }
 
   async UserLogin(event: APIGatewayProxyEventV2) {
