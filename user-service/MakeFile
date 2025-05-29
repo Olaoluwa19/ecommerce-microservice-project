@@ -6,3 +6,6 @@ start_db:
 
 stop_db:
 	docker compose down
+
+server:
+	yarn run dev
