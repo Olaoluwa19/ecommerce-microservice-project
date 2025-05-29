@@ -13,18 +13,33 @@ import { autoInjectable } from "tsyringe";
 import { plainToClass } from "class-transformer";
 import { SignupInput } from "../models/dto/Signupinput.js";
 import { AppValidationError } from "../utility/errors.js";
+import { GetSalt, GetHashedPassword, } from "../utility/password.js";
 let UserService = class UserService {
     constructor(repository) {
         this.repository = repository;
     }
     // User creation, validation and login.
     async CreateUser(event) {
-        const input = plainToClass(SignupInput, event.body);
-        const error = await AppValidationError(input);
-        if (error)
-            return ErrorResponse(404, error);
-        // await this.repository.CreateUserOperation();
-        return SuccessResponse(input);
+        try {
+            const input = plainToClass(SignupInput, event.body);
+            const error = await AppValidationError(input);
+            if (error)
+                return ErrorResponse(404, error);
+            const salt = await GetSalt();
+            const hashedPassword = await GetHashedPassword(input.password, salt);
+            const data = await this.repository.createAccount({
+                email: input.email,
+                password: hashedPassword,
+                phone: input.phone,
+                userType: "BUYER",
+                salt: salt,
+            });
+            return SuccessResponse(data);
+        }
+        catch (error) {
+            console.log(error);
+            return ErrorResponse(500, error);
+        }
     }
     async UserLogin(event) {
         return SuccessResponse({ message: "response from User Login" });
