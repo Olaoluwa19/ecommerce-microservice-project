@@ -10,6 +10,7 @@ import {
   GetHashedPassword,
   ValidatePassword,
 } from "../utility/password.js";
+import { LoginInput } from "../models/dto/Logininput.js";
 
 @autoInjectable()
 export class UserService {
@@ -44,7 +45,21 @@ export class UserService {
   }
 
   async UserLogin(event: APIGatewayProxyEventV2) {
-    return SuccessResponse({ message: "response from User Login" });
+    try {
+      const input = plainToClass(LoginInput, event.body);
+      const error = await AppValidationError(input);
+      if (error) return ErrorResponse(404, error);
+
+      // const salt = await GetSalt();
+      // const hashedPassword = await GetHashedPassword(input.password, salt);
+      const data = await this.repository.findAccount(input.email);
+      // check or validate password
+
+      return SuccessResponse(data);
+    } catch (error) {
+      console.log(error);
+      return ErrorResponse(500, error);
+    }
   }
 
   async VerifyUser(event: APIGatewayProxyEventV2) {
