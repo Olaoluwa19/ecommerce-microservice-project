@@ -10,6 +10,10 @@ provider:
   httpApi:
     cors: true
 
+custom:
+  serverless-offline:
+    httpPort: 3001
+
 functions:
   signup:
     handler: app/handler.Signup
