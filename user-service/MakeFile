@@ -1,5 +1,5 @@
 # Makefile for managing Docker Compose
-.PHONY: start_db stop_db
+.PHONY: start_db stop_db server
 
 start_db:
 	docker compose up -d
