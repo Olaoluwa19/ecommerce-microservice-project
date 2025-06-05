@@ -9,6 +9,7 @@ import {
   GetSalt,
   GetHashedPassword,
   ValidatePassword,
+  GetToken,
 } from "../utility/password.js";
 import { LoginInput } from "../models/dto/Logininput.js";
 
@@ -50,12 +51,20 @@ export class UserService {
       const error = await AppValidationError(input);
       if (error) return ErrorResponse(404, error);
 
-      // const salt = await GetSalt();
-      // const hashedPassword = await GetHashedPassword(input.password, salt);
       const data = await this.repository.findAccount(input.email);
-      // check or validate password
 
-      return SuccessResponse(data);
+      // check or validate password
+      const verified = await ValidatePassword(
+        input.password,
+        data.password,
+        data.salt
+      );
+      if (!verified) {
+        throw new Error("password does not match");
+      }
+      const token = GetToken(data);
+
+      return SuccessResponse({ token });
     } catch (error) {
       console.log(error);
       return ErrorResponse(500, error);
