@@ -38,6 +38,7 @@ export class UserService {
         salt: salt,
       });
 
+      console.log(data);
       return SuccessResponse(data);
     } catch (error) {
       console.log(error);
@@ -54,13 +55,9 @@ export class UserService {
       const data = await this.repository.findAccount(input.email);
 
       // check or validate password
-      const verified = await ValidatePassword(
-        input.password,
-        data.password,
-        data.salt
-      );
+      const verified = await ValidatePassword(input.password, data.password);
       if (!verified) {
-        throw new Error("password does not match");
+        throw new Error("password does not match!");
       }
       const token = GetToken(data);
 

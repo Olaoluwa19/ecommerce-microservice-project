@@ -9,13 +9,14 @@ export class UserRepository {
     await client.connect();
 
     const queryString =
-      "INSERT INTO users (phone, email, password, salt, user_type) VALUES($1, $2, $3, $4, $5)";
+      "INSERT INTO users (phone, email, password, salt, user_type) VALUES($1, $2, $3, $4, $5) RETURNING user_id, email, phone, user_type";
     const values = [phone, email, password, salt, userType];
     const result = await client.query(queryString, values);
     await client.end();
     if (result.rowCount > 0) {
       return result.rows[0] as UserModel;
     }
+    throw new Error("Failed to create user");
   }
 
   async findAccount(email: string) {
@@ -23,7 +24,7 @@ export class UserRepository {
     await client.connect();
 
     const queryString =
-      "SELECT user_id, email, phone, salt FROM users WHERE email = $1";
+      "SELECT user_id, email, phone, password, salt FROM users WHERE email = $1";
     const values = [email];
     const result = await client.query(queryString, values);
     await client.end();

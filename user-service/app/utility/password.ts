@@ -14,18 +14,12 @@ export const GetHashedPassword = async (password: string, salt: string) => {
 
 export const ValidatePassword = async (
   enteredPassword: string,
-  savedPassword: string,
-  salt: string
+  savedPassword: string
 ) => {
-  return (await GetHashedPassword(enteredPassword, salt)) === savedPassword;
+  return await bcrypt.compare(enteredPassword, savedPassword);
 };
 
-export const GetToken = async ({
-  email,
-  user_id,
-  phone,
-  userType,
-}: UserModel) => {
+export const GetToken = ({ email, user_id, phone, userType }: UserModel) => {
   return jwt.sign(
     {
       user_id,
