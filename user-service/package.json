@@ -24,6 +24,7 @@
     "reflect-metadata": "^0.2.2",
     "ts-node": "^10.9.2",
     "tsyringe": "^4.10.0",
+    "twilio": "^5.7.0",
     "typescript": "^5.8.3"
   },
   "devDependencies": {
