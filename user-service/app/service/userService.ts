@@ -10,10 +10,13 @@ import {
   GetHashedPassword,
   ValidatePassword,
   GetToken,
-  VerifyToken
+  VerifyToken,
 } from "../utility/password.js";
 import { LoginInput } from "../models/dto/Logininput.js";
-import { GenerateAccessCode, SendVerificationCode } from "../utility/notification.js"
+import {
+  GenerateAccessCode,
+  SendVerificationCode,
+} from "../utility/notification.js";
 
 @autoInjectable()
 export class UserService {
@@ -71,13 +74,16 @@ export class UserService {
   }
 
   async GetVerificationToken(event: APIGatewayProxyEventV2) {
-    const token = event.headers.authorization
-    const payload = await VerifyToken(token)
+    const token = event.headers.authorization;
+    const payload = await VerifyToken(token);
     if (payload) {
-      const { code, expiry } = GenerateAccessCode() 
-      const response = await SendVerificationCode(code, payload)
+      const { code, expiry } = GenerateAccessCode();
+      // save to DB to confirm verification
+      const response = await SendVerificationCode(code, payload.phone);
     }
-    return SuccessResponse({ message: "response from Verify User" });
+    return SuccessResponse({
+      message: "Verification code is sent to your registered phone number.",
+    });
   }
 
   async VerifyUser(event: APIGatewayProxyEventV2) {
