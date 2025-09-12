@@ -1,0 +1,32 @@
+TO CREATE A SERVERLESS APPLICATION, HERE ARE THE STEPS TO FOLLOW:
+
+1. OPEN GIT BASH, RUN sudo npm install -g serverless
+2. CHECK VERSION:  sls --version
+3. INSTALL AWS CLI FROM THE WEB
+4. CREATE A PROJECT REPO/FOLDER
+5. OPEN YOUR PROJECT REPO/FOLDER WITH GIT BASH
+6. RUN sls
+7. SELECT: AWS - Node.js - HTTP API
+8. GIVE THE AWS PROJECT A NAME
+9. SELECT THE ORGANISATION YOU WANT TO ADD THE PROJECT OR SKIP
+10. SELECT NO - NOT TO DEPLOY RIGHT AWAY
+11. THEN cd project folder name
+12. THEN run vsc
+13. CREATE package.json file by running npm init --y in terminal
+14. INSTALL DEPENCIES:
+    - sls plugin install --name serverless-offline
+    - sls plugin install --name serverless-plugin-typescript
+15. RUN tsc --init TO CREATE A TYPESCRIPT CONFIG FILE
+16. INSTALL MORE DEPENDENCIES
+    - npm install --dev typescript ts-node
+    - npm install aws-lambda
+    - npm install --dev @types/aws-lambda
+17. CONFIGURE TYPESCRIPT CONFIG FILE
+18. 
+
+yarn add class-transformer class-validator
+yarn add bcrypt && yarn add --dev @types/bcrypt
+yarn add pg
+yarn add --dev @types/pg
+yarn add jsonwebtoken && yarn add --dev @types/jsonwebtoken
+yarn add twilio
