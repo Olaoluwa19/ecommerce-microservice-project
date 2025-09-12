@@ -22,7 +22,7 @@ TO CREATE A SERVERLESS APPLICATION, HERE ARE THE STEPS TO FOLLOW:
     - npm install aws-lambda
     - npm install --dev @types/aws-lambda
 17. CONFIGURE TYPESCRIPT CONFIG FILE
-18. 
+18. npm install dotenv @types/dotenv --save-dev
 
 yarn add class-transformer class-validator
 yarn add bcrypt && yarn add --dev @types/bcrypt

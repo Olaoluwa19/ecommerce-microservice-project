@@ -1,3 +1,5 @@
+import * as dotenv from "dotenv";
+dotenv.config(); // Loads .env into process.env
 import "reflect-metadata";
 import { container } from "tsyringe";
 import { APIGatewayProxyEventV2 } from "aws-lambda";
