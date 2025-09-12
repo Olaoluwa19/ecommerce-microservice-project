@@ -7,9 +7,6 @@ import middy from "@middy/core";
 import bodyParser from "@middy/http-json-body-parser";
 import { UserRepository } from "app/repository/userRepository";
 
-// Register UserRepository with the container
-// container.register(UserRepository, { useClass: UserRepository });
-
 const service = container.resolve(UserService);
 
 export const Signup = middy((event: APIGatewayProxyEventV2) => {
