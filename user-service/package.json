@@ -7,7 +7,11 @@
   "scripts": {
     "build": "tsc",
     "dev": "serverless offline",
-    "deploy": "sls deploy --verbose"
+    "deploy": "sls deploy --verbose",
+    "watch": "serverless offline && docker-compose start",
+    "docker:build": "docker-compose up --build",
+    "docker:start": "docker-compose start",
+    "docker:stop": "docker-compose stop"
   },
   "keywords": [],
   "author": "",
