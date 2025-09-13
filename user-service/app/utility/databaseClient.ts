@@ -2,10 +2,10 @@ import { Client } from "pg";
 
 export const DBClient = () => {
   return new Client({
-    host: "127.0.0.1",
-    user: "root",
-    database: "user_service",
-    password: "root",
+    host: process.env.POSTGRES_HOST,
+    user: process.env.POSTGRES_USER,
+    database: process.env.POSTGRES_DB,
+    password: process.env.POSTGRES_PASSWORD,
     port: 5432,
   });
 };

@@ -2,7 +2,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { UserModel } from "../models/UserModel.js";
 
-const APP_SECRET = "your_secret_key"; // Replace with your actual secret key
+const APP_SECRET = process.env.APP_SECRET;
 
 export const GetSalt = async () => {
   return await bcrypt.genSalt();
