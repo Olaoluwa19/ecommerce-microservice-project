@@ -8,7 +8,9 @@ export const AppValidationError = async (
   });
 
   if (error.length) {
+    console.log(error);
     return error;
   }
+  console.log(error);
   return false;
 };

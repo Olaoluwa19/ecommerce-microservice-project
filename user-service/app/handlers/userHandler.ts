@@ -1,6 +1,5 @@
 import * as dotenv from "dotenv";
 dotenv.config(); // Loads .env into process.env
-import "reflect-metadata";
 import { container } from "tsyringe";
 import { APIGatewayProxyEventV2 } from "aws-lambda";
 import { UserService } from "../service/userService.js";
@@ -11,11 +10,11 @@ import { UserRepository } from "app/repository/userRepository";
 
 const service = container.resolve(UserService);
 
-export const Signup = middy((event: APIGatewayProxyEventV2) => {
+export const Signup = middy(async (event: APIGatewayProxyEventV2) => {
   return service.CreateUser(event);
 }).use(bodyParser());
 
-export const Login = middy((event: APIGatewayProxyEventV2) => {
+export const Login = middy(async (event: APIGatewayProxyEventV2) => {
   return service.UserLogin(event);
 }).use(bodyParser());
 
