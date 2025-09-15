@@ -1,15 +1,15 @@
-# version: "3.9"
 services:
-  postgress:
+  postgres:
     image: postgres:latest
+    container_name: serverless-user-services
     restart: always
     env_file:
       - .env # This loads all vars from .env into the container
     ports:
       - "5432:5432"
     volumes:
-      - db:/var/lib/postgresql/data
+      - user-data:/var/lib/postgresql/data
 
 volumes:
-  db:
+  user-data:
     driver: local
