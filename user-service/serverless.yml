@@ -13,6 +13,7 @@ provider:
 custom:
   serverless-offline:
     httpPort: 3001
+    lambdaTimeout: 10000 # 10 seconds in milliseconds
 
 functions:
   signup:
