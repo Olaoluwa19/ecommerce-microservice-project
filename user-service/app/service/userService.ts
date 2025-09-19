@@ -31,6 +31,7 @@ export class UserService {
     try {
       const input = plainToClass(SignupInput, event.body);
       const error = await AppValidationError(input);
+      console.log(error);
       if (error) return ErrorResponse(404, error);
 
       const salt = await GetSalt();
