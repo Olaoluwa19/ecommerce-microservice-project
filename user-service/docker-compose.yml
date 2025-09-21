@@ -1,7 +1,7 @@
 services:
   postgres:
     image: postgres:latest
-    container_name: serverless-user-services
+    container_name: user_service
     restart: always
     env_file:
       - .env # This loads all vars from .env into the container
