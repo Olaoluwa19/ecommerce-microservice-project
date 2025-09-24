@@ -1,15 +1,16 @@
 services:
   postgres:
     image: postgres:latest
-    container_name: user_service
     restart: always
-    env_file:
-      - .env # This loads all vars from .env into the container
+    environment:
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_USER=root
+      - POSTGRES_DB=user_service
     ports:
       - "5432:5432"
     volumes:
-      - user-data:/var/lib/postgresql/data
+      - db:/var/lib/postgresql/data
 
 volumes:
-  user-data:
+  db:
     driver: local

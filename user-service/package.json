@@ -8,7 +8,7 @@
     "build": "tsc",
     "dev": "serverless offline",
     "deploy": "sls deploy --verbose",
-    "watch": "serverless offline && docker-compose up -d",
+    "watch": "docker-compose up -d && serverless offline",
     "docker:build": "docker-compose up --build",
     "docker:start": "docker-compose up -d",
     "docker:stop": "docker-compose stop"
