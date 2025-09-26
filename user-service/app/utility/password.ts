@@ -2,7 +2,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { UserModel } from "../models/UserModel.js";
 
-const APP_SECRET = process.env.APP_SECRET;
+const APP_SECRET = process.env.APP_SECRET; // || "your_secret_key"
 
 export const GetSalt = async () => {
   return await bcrypt.genSalt();
@@ -14,7 +14,8 @@ export const GetHashedPassword = async (password: string, salt: string) => {
 
 export const ValidatePassword = async (
   enteredPassword: string,
-  savedPassword: string
+  savedPassword: string,
+  salt: string
 ) => {
   return await bcrypt.compare(enteredPassword, savedPassword);
 };

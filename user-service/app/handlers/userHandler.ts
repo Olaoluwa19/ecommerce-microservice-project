@@ -8,11 +8,11 @@ import { UserRepository } from "app/repository/userRepository";
 
 const service = container.resolve(UserService);
 
-export const Signup = middy(async (event: APIGatewayProxyEventV2) => {
+export const Signup = middy((event: APIGatewayProxyEventV2) => {
   return service.CreateUser(event);
 }).use(bodyParser());
 
-export const Login = middy(async (event: APIGatewayProxyEventV2) => {
+export const Login = middy((event: APIGatewayProxyEventV2) => {
   return service.UserLogin(event);
 }).use(bodyParser());
 
