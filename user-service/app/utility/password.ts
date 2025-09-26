@@ -1,3 +1,5 @@
+import * as dotenv from "dotenv";
+dotenv.config(); // Loads .env into process.env
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { UserModel } from "../models/UserModel.js";
