@@ -1,3 +1,5 @@
+import * as dotenv from "dotenv";
+dotenv.config(); // Loads .env into process.env
 import { ErrorResponse, SuccessResponse } from "../utility/response.js";
 import { APIGatewayProxyEventV2 } from "aws-lambda";
 import { UserRepository } from "../repository/userRepository.js";
@@ -43,8 +45,6 @@ export class UserService {
         userType: "BUYER",
         salt: salt,
       });
-
-      console.log(data);
       return SuccessResponse(data);
     } catch (error) {
       console.log(error);
@@ -61,7 +61,11 @@ export class UserService {
       const data = await this.repository.findAccount(input.email);
 
       // check or validate password
-      const verified = await ValidatePassword(input.password, data.password);
+      const verified = await ValidatePassword(
+        input.password,
+        data.password,
+        data.salt
+      );
       if (!verified) {
         throw new Error("password does not match!");
       }
