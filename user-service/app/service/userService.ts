@@ -85,10 +85,10 @@ export class UserService {
       const { code, expiry } = GenerateAccessCode();
       // save to DB to confirm verification
       const response = await SendVerificationCode(code, payload.phone);
+      return SuccessResponse({
+        message: "Verification code is sent to your registered phone number.",
+      });
     }
-    return SuccessResponse({
-      message: "Verification code is sent to your registered phone number.",
-    });
   }
 
   async VerifyUser(event: APIGatewayProxyEventV2) {
