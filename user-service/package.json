@@ -5,9 +5,9 @@
   "description": "A Node.js project.",
   "main": "src/index.ts",
   "scripts": {
-    "clean": "rm -rf dist",
-    "build": "npm run clean && tsc",
+    "clean": "rm -rf .build",
     "dev": "serverless offline",
+    "build": "npm run clean && npm run dev",
     "deploy": "sls deploy --verbose",
     "watch": "docker-compose up -d && serverless offline",
     "docker:build": "docker-compose up --build",
