@@ -89,7 +89,7 @@ export class UserService {
         code,
         expiry
       );
-      console.log(code, expiry);
+      console.log({ "Access code": code, "code expires in": expiry });
       // const response = await SendVerificationCode(code, payload.phone);
       return SuccessResponse({
         message: "Verification code is sent to your registered phone number.",
