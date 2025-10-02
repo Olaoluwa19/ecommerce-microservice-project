@@ -1,5 +1,5 @@
 import { Length } from "class-validator";
-import { LoginInput } from "./Logininput.js";
+import { LoginInput } from "./LoginInput.js";
 
 export class SignupInput extends LoginInput {
   @Length(10, 14)
