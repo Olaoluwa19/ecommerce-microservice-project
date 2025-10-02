@@ -20,7 +20,7 @@ export class UserRepository extends DBOperation {
 
   async findAccount(email: string) {
     const queryString =
-      "SELECT user_id, email, phone, password, salt FROM users WHERE email = $1";
+      "SELECT user_id, email, phone, password, salt, verification_code, expiry FROM users WHERE email = $1";
     const values = [email];
     const result = await this.executeQuery(queryString, values);
     if (result.rowCount < 1) {
