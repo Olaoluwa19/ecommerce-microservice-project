@@ -5,7 +5,7 @@ import { APIGatewayProxyEventV2 } from "aws-lambda";
 import { UserRepository } from "../repository/userRepository.js";
 import { autoInjectable } from "tsyringe";
 import { plainToClass } from "class-transformer";
-import { SignupInput } from "../models/dto/Signupinput.js";
+import { SignupInput } from "../models/dto/SignupInput.js";
 import { AppValidationError } from "../utility/errors.js";
 import {
   GetSalt,
@@ -14,11 +14,13 @@ import {
   GetToken,
   VerifyToken,
 } from "../utility/password.js";
-import { LoginInput } from "../models/dto/Logininput.js";
+import { LoginInput } from "../models/dto/LoginInput.js";
+import { VerificationInput } from "../models/dto/UpdateInput.js";
 import {
   GenerateAccessCode,
   SendVerificationCode,
 } from "../utility/notification.js";
+import { TimeDifference } from "../utility/dateHelper.js";
 
 @autoInjectable()
 export class UserService {
@@ -26,6 +28,10 @@ export class UserService {
 
   constructor(repository: UserRepository) {
     this.repository = repository;
+  }
+
+  async ResponseWithError(event: APIGatewayProxyEventV2) {
+    return ErrorResponse(404, "request Method is not supported!");
   }
 
   // User creation, validation and login.
@@ -81,24 +87,51 @@ export class UserService {
   async GetVerificationToken(event: APIGatewayProxyEventV2) {
     const token = event.headers.authorization;
     const payload = await VerifyToken(token);
-    if (payload) {
-      const { code, expiry } = GenerateAccessCode();
-      // save to DB to confirm verification
-      await this.repository.updateVerificationCode(
-        payload.user_id,
-        code,
-        expiry
-      );
-      console.log({ "Access code": code, "code expires in": expiry });
-      // const response = await SendVerificationCode(code, payload.phone);
-      return SuccessResponse({
-        message: "Verification code is sent to your registered phone number.",
-      });
-    }
+    if (!payload) return ErrorResponse(403, "authorization failed");
+
+    const { code, expiry } = GenerateAccessCode();
+    // save to DB to confirm verification
+    await this.repository.updateVerificationCode(payload.user_id, code, expiry);
+    console.log({ "Access code": code, "code expires in": expiry });
+    await SendVerificationCode(code, payload.phone);
+
+    return SuccessResponse({
+      message: "Verification code is sent to your registered phone number.",
+    });
   }
 
   async VerifyUser(event: APIGatewayProxyEventV2) {
-    return SuccessResponse({ message: "response from Verify User" });
+    const token = event.headers.authorization;
+    const payload = await VerifyToken(token);
+    if (!payload) return ErrorResponse(403, "authorization failed");
+
+    const input = plainToClass(VerificationInput, event.body);
+    const error = await AppValidationError(input);
+    if (error) return ErrorResponse(404, error);
+
+    const { verification_code, expiry } = await this.repository.findAccount(
+      payload.email
+    );
+    // find the user account
+    if (verification_code === parseInt(input.code)) {
+      // check expiry
+      const currentTime = new Date();
+      const diff = TimeDifference(
+        expiry.toISOString(),
+        currentTime.toISOString(),
+        "m"
+      );
+      if (diff > 0) {
+        console.log("verified successfully");
+        // update user as verifiedi in DB
+      } else {
+        return ErrorResponse(403, "Code has expired, please request new code");
+      }
+    }
+
+    // check the code is same or not and should be within the expiry time
+
+    return SuccessResponse({ message: "User verified" });
   }
 
   // User profile
