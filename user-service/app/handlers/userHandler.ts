@@ -1,10 +1,8 @@
 import { container } from "tsyringe";
 import { APIGatewayProxyEventV2 } from "aws-lambda";
 import { UserService } from "../service/userService.js";
-import { ErrorResponse } from "../utility/response.js";
 import middy from "@middy/core";
 import bodyParser from "@middy/http-json-body-parser";
-import { UserRepository } from "app/repository/userRepository";
 
 const service = container.resolve(UserService);
 
@@ -23,9 +21,9 @@ export const Verify = middy((event: APIGatewayProxyEventV2) => {
   } else if (httpMethod === "get") {
     return service.GetVerificationToken(event);
   } else {
-    service.ResponseWithError(event);
+    return service.ResponseWithError(event);
   }
-}).use(bodyParser());
+}).use(service.conditionalBodyParser());
 
 export const Profile = middy((event: APIGatewayProxyEventV2) => {
   const httpMethod = event.requestContext.http.method.toLowerCase();
@@ -36,9 +34,9 @@ export const Profile = middy((event: APIGatewayProxyEventV2) => {
   } else if (httpMethod === "get") {
     return service.GetProfile(event);
   } else {
-    service.ResponseWithError(event);
+    return service.ResponseWithError(event);
   }
-}).use(bodyParser());
+}).use(service.conditionalBodyParser());
 
 export const Cart = middy((event: APIGatewayProxyEventV2) => {
   const httpMethod = event.requestContext.http.method.toLowerCase();
@@ -49,9 +47,9 @@ export const Cart = middy((event: APIGatewayProxyEventV2) => {
   } else if (httpMethod === "get") {
     return service.GetCart(event);
   } else {
-    service.ResponseWithError(event);
+    return service.ResponseWithError(event);
   }
-}).use(bodyParser());
+}).use(service.conditionalBodyParser());
 
 export const Payment = middy((event: APIGatewayProxyEventV2) => {
   const httpMethod = event.requestContext.http.method.toLowerCase();
@@ -62,6 +60,6 @@ export const Payment = middy((event: APIGatewayProxyEventV2) => {
   } else if (httpMethod === "get") {
     return service.GetPaymentMethod(event);
   } else {
-    service.ResponseWithError(event);
+    return service.ResponseWithError(event);
   }
-}).use(bodyParser());
+}).use(service.conditionalBodyParser());

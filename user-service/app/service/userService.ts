@@ -1,5 +1,6 @@
 import * as dotenv from "dotenv";
 dotenv.config(); // Loads .env into process.env
+import bodyParser from "@middy/http-json-body-parser";
 import { ErrorResponse, SuccessResponse } from "../utility/response.js";
 import { APIGatewayProxyEventV2 } from "aws-lambda";
 import { UserRepository } from "../repository/userRepository.js";
@@ -30,6 +31,15 @@ export class UserService {
     this.repository = repository;
   }
 
+  conditionalBodyParser = () => ({
+    before: async (handler: any) => {
+      const httpMethod = handler.event.requestContext.http.method.toLowerCase();
+      if (["post", "put"].includes(httpMethod)) {
+        await bodyParser().before(handler);
+      }
+    },
+  });
+
   async ResponseWithError(event: APIGatewayProxyEventV2) {
     return ErrorResponse(404, "request Method is not supported!");
   }
@@ -50,6 +60,8 @@ export class UserService {
         phone: input.phone,
         userType: "BUYER",
         salt: salt,
+        first_name: input.first_name,
+        last_name: input.last_name,
       });
       return SuccessResponse(data);
     } catch (error) {
@@ -123,7 +135,7 @@ export class UserService {
       );
       if (diff > 0) {
         console.log("verified successfully");
-        // update user as verifiedi in DB
+        await this.repository.updateVerifyUser(payload.user_id);
       } else {
         return ErrorResponse(403, "Code has expired, please request new code");
       }
