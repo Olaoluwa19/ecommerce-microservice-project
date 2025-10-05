@@ -1,10 +1,10 @@
 import * as dotenv from "dotenv";
-dotenv.config(); // Loads .env into process.env
+dotenv.config();
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { UserModel } from "../models/UserModel.js";
 
-const APP_SECRET = process.env.APP_SECRET; // || "your_secret_key"
+const APP_SECRET = process.env.APP_SECRET;
 
 export const GetSalt = async () => {
   return await bcrypt.genSalt();
@@ -19,10 +19,15 @@ export const ValidatePassword = async (
   savedPassword: string,
   salt: string
 ) => {
-  return await bcrypt.compare(enteredPassword, savedPassword);
+  return (await GetHashedPassword(enteredPassword, salt)) == savedPassword;
 };
 
-export const GetToken = ({ email, user_id, phone, userType }: UserModel) => {
+export const GetToken = async ({
+  email,
+  user_id,
+  phone,
+  userType,
+}: UserModel) => {
   return jwt.sign(
     {
       user_id,
@@ -45,7 +50,6 @@ export const VerifyToken = async (
       const payload = jwt.verify(token.split(" ")[1], APP_SECRET);
       return payload as UserModel;
     }
-
     return false;
   } catch (error) {
     console.log(error);
