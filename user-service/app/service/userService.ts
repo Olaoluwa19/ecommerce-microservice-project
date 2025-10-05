@@ -158,40 +158,6 @@ export class UserService {
     return SuccessResponse({ message: "User verified" });
   }
 
-  // async VerifyUser(event: APIGatewayProxyEventV2) {
-  //   const token = event.headers.authorization || event.headers.Authorization;
-  //   const payload = await VerifyToken(token);
-  //   if (!payload) return ErrorResponse(403, "authorization failed");
-
-  //   const input = plainToClass(VerificationInput, event.body);
-  //   const error = await AppValidationError(input);
-  //   if (error) return ErrorResponse(404, error);
-
-  //   const { verification_code, expiry } = await this.repository.findAccount(
-  //     payload.email
-  //   );
-  //   // find the user account
-  //   if (verification_code === parseInt(input.code)) {
-  //     // check expiry
-  //     const currentTime = new Date();
-  //     const diff = TimeDifference(
-  //       expiry.toISOString(),
-  //       currentTime.toISOString(),
-  //       "m"
-  //     );
-  //     if (diff > 0) {
-  //       console.log("verified successfully");
-  //       await this.repository.updateVerifyUser(payload.user_id);
-  //     } else {
-  //       return ErrorResponse(403, "Code has expired, please request new code");
-  //     }
-  //   }
-
-  //   // check the code is same or not and should be within the expiry time
-
-  //   return SuccessResponse({ message: "User verified" });
-  // }
-
   // User profile
   async CreateProfile(event: APIGatewayProxyEventV2) {
     return SuccessResponse({ message: "response from User Profile" });
