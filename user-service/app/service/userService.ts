@@ -105,7 +105,8 @@ export class UserService {
     // save to DB to confirm verification
     await this.repository.updateVerificationCode(payload.user_id, code, expiry);
     console.log({ "Access code": code, "code expires in": expiry });
-    await SendVerificationCode(code, payload.phone);
+    // send code to user phone number
+    // await SendVerificationCode(code, payload.phone);
 
     return SuccessResponse({
       message: "Verification code is sent to your registered phone number.",
@@ -113,20 +114,31 @@ export class UserService {
   }
 
   async VerifyUser(event: APIGatewayProxyEventV2) {
-    const token = event.headers.authorization || event.headers.Authorization;
+    // Normalize headers to handle case sensitivity
+    const headers = event.headers || {};
+    const token = headers.authorization || headers.Authorization;
+    console.log("Headers:", event.headers);
+
+    if (!token) {
+      return ErrorResponse(401, "Authorization header missing");
+    }
+
     const payload = await VerifyToken(token);
-    if (!payload) return ErrorResponse(403, "authorization failed");
+    if (!payload) {
+      return ErrorResponse(403, "Authorization failed");
+    }
 
     const input = plainToClass(VerificationInput, event.body);
     const error = await AppValidationError(input);
-    if (error) return ErrorResponse(404, error);
+    if (error) {
+      return ErrorResponse(400, error);
+    }
 
     const { verification_code, expiry } = await this.repository.findAccount(
       payload.email
     );
-    // find the user account
+
     if (verification_code === parseInt(input.code)) {
-      // check expiry
       const currentTime = new Date();
       const diff = TimeDifference(
         expiry.toISOString(),
@@ -134,17 +146,51 @@ export class UserService {
         "m"
       );
       if (diff > 0) {
-        console.log("verified successfully");
+        console.log("Verified successfully");
         await this.repository.updateVerifyUser(payload.user_id);
       } else {
         return ErrorResponse(403, "Code has expired, please request new code");
       }
+    } else {
+      return ErrorResponse(400, "Invalid verification code");
     }
-
-    // check the code is same or not and should be within the expiry time
 
     return SuccessResponse({ message: "User verified" });
   }
+
+  // async VerifyUser(event: APIGatewayProxyEventV2) {
+  //   const token = event.headers.authorization || event.headers.Authorization;
+  //   const payload = await VerifyToken(token);
+  //   if (!payload) return ErrorResponse(403, "authorization failed");
+
+  //   const input = plainToClass(VerificationInput, event.body);
+  //   const error = await AppValidationError(input);
+  //   if (error) return ErrorResponse(404, error);
+
+  //   const { verification_code, expiry } = await this.repository.findAccount(
+  //     payload.email
+  //   );
+  //   // find the user account
+  //   if (verification_code === parseInt(input.code)) {
+  //     // check expiry
+  //     const currentTime = new Date();
+  //     const diff = TimeDifference(
+  //       expiry.toISOString(),
+  //       currentTime.toISOString(),
+  //       "m"
+  //     );
+  //     if (diff > 0) {
+  //       console.log("verified successfully");
+  //       await this.repository.updateVerifyUser(payload.user_id);
+  //     } else {
+  //       return ErrorResponse(403, "Code has expired, please request new code");
+  //     }
+  //   }
+
+  //   // check the code is same or not and should be within the expiry time
+
+  //   return SuccessResponse({ message: "User verified" });
+  // }
 
   // User profile
   async CreateProfile(event: APIGatewayProxyEventV2) {
