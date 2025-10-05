@@ -113,7 +113,7 @@ export class UserService {
   }
 
   async VerifyUser(event: APIGatewayProxyEventV2) {
-    const token = event.headers.authorization;
+    const token = event.headers.authorization || event.headers.Authorization;
     const payload = await VerifyToken(token);
     if (!payload) return ErrorResponse(403, "authorization failed");
 
