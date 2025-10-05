@@ -38,16 +38,39 @@ export const GetToken = ({ email, user_id, phone, userType }: UserModel) => {
 };
 
 export const VerifyToken = async (
-  token: string
+  token: string | undefined
 ): Promise<UserModel | false> => {
   try {
-    if (token !== "") {
-      const payload = jwt.verify(token.split(" ")[1], APP_SECRET);
-      return payload as UserModel;
+    if (!token) {
+      console.log("No token provided");
+      return false;
     }
-    return false;
+
+    const tokenParts = token.split(" ");
+    if (tokenParts.length !== 2 || tokenParts[0] !== "Bearer") {
+      console.log("Invalid token format");
+      return false;
+    }
+
+    const payload = jwt.verify(tokenParts[1], APP_SECRET);
+    return payload as UserModel;
   } catch (error) {
-    console.log(error);
+    console.error("Token verification error:", error);
     return false;
   }
 };
+
+// export const VerifyToken = async (
+//   token: string
+// ): Promise<UserModel | false> => {
+//   try {
+//     if (token !== "") {
+//       const payload =  jwt.verify(token.split(" ")[1], APP_SECRET);
+//       return payload as UserModel;
+//     }
+//     return false;
+//   } catch (error) {
+//     console.log(error);
+//     return false;
+//   }
+// };
