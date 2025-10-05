@@ -22,12 +22,7 @@ export const ValidatePassword = async (
   return (await GetHashedPassword(enteredPassword, salt)) == savedPassword;
 };
 
-export const GetToken = async ({
-  email,
-  user_id,
-  phone,
-  userType,
-}: UserModel) => {
+export const GetToken = ({ email, user_id, phone, userType }: UserModel) => {
   return jwt.sign(
     {
       user_id,
