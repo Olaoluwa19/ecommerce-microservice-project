@@ -138,7 +138,9 @@ export class UserService {
       payload.email
     );
 
+    //find user by id and compare code
     if (verification_code === parseInt(input.code)) {
+      // check if code is expired
       const currentTime = new Date();
       const diff = TimeDifference(
         expiry.toISOString(),
