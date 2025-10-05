@@ -31,12 +31,23 @@ export class UserRepository extends DBOperation {
 
   async updateVerificationCode(userId: string, code: number, expiry: Date) {
     const queryString =
-      "UPDATE users SET verification_code=$1, expiry=$2 WHERE user_id=$3 RETURNING *"; //user_id, email, phone, user_type
+      "UPDATE users SET verification_code=$1, expiry=$2 WHERE user_id=$3 AND verified=FALSE RETURNING *"; //user_id, email, phone, user_type
     const values = [code, expiry, userId];
     const result = await this.executeQuery(queryString, values);
     if (result.rowCount > 0) {
       return result.rows[0] as UserModel;
     }
-    throw new Error("Failed to create user");
+    throw new Error("User is already verified");
+  }
+
+  async updateVerifyUser(userId: string) {
+    const queryString =
+      "UPDATE users SET verified=TRUE WHERE user_id=$1 AND verified=FALSE RETURNING *"; //user_id, email, phone, user_type
+    const values = [userId];
+    const result = await this.executeQuery(queryString, values);
+    if (result.rowCount > 0) {
+      return result.rows[0] as UserModel;
+    }
+    throw new Error("User is already verified");
   }
 }
