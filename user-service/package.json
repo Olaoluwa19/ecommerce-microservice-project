@@ -14,7 +14,8 @@
     "docker:start": "docker-compose up -d",
     "docker:stop": "docker-compose stop",
     "migrate": "db-migrate up",
-    "migrate-down": "db-migrate down"
+    "migrate-down": "db-migrate down",
+    "create_migration": "db-migrate create $(name) --sql-file"
   },
   "keywords": [],
   "author": "",

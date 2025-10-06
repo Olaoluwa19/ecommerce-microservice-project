@@ -1,5 +1,5 @@
 # Makefile for managing Docker Compose
-.PHONY: start_db stop_db server migrate migrate-down
+.PHONY: start_db stop_db server migrate migrate-down create_migration
 
 start_db:
 	docker compose up -d
@@ -12,6 +12,9 @@ migrate:
 
 migrate-down:
 	db-migrate down
+
+create_migration:
+	db-migrate create $(name) --sql-file
 
 server:
 	yarn run dev
