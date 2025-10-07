@@ -7,26 +7,10 @@ export class UserRepository extends DBOperation {
     super();
   }
 
-  async createAccount({
-    email,
-    password,
-    salt,
-    phone,
-    userType,
-    first_name,
-    last_name,
-  }: UserModel) {
+  async createAccount({ email, password, salt, phone, userType }: UserModel) {
     const queryString =
-      "INSERT INTO users (phone, email, password, salt, user_type, first_name, last_name) VALUES($1, $2, $3, $4, $5, $6, $7) RETURNING *"; //user_id, email, phone, user_type
-    const values = [
-      phone,
-      email,
-      password,
-      salt,
-      userType,
-      first_name,
-      last_name,
-    ];
+      "INSERT INTO users (phone, email, password, salt, user_type) VALUES($1, $2, $3, $4, $5) RETURNING *";
+    const values = [phone, email, password, salt, userType];
     const result = await this.executeQuery(queryString, values);
     if (result.rowCount > 0) {
       return result.rows[0] as UserModel;
@@ -45,7 +29,7 @@ export class UserRepository extends DBOperation {
     return result.rows[0] as UserModel;
   }
 
-  async updateVerificationCode(userId: string, code: number, expiry: Date) {
+  async updateVerificationCode(userId: number, code: number, expiry: Date) {
     const queryString =
       "UPDATE users SET verification_code=$1, expiry=$2 WHERE user_id=$3 AND verified=FALSE RETURNING *"; //user_id, email, phone, user_type
     const values = [code, expiry, userId];
@@ -56,7 +40,7 @@ export class UserRepository extends DBOperation {
     throw new Error("User is already verified");
   }
 
-  async updateVerifyUser(userId: string) {
+  async updateVerifyUser(userId: number) {
     const queryString =
       "UPDATE users SET verified=TRUE WHERE user_id=$1 AND verified=FALSE RETURNING *"; //user_id, email, phone, user_type
     const values = [userId];
@@ -66,4 +50,8 @@ export class UserRepository extends DBOperation {
     }
     throw new Error("User is already verified");
   }
+
+  async updateUser() {}
+
+  async createProfile() {}
 }
