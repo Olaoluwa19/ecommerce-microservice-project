@@ -22,6 +22,7 @@ import {
   SendVerificationCode,
 } from "../utility/notification.js";
 import { TimeDifference } from "../utility/dateHelper.js";
+import { ProfileInput } from "../models/dto/AddressInput.js";
 
 @autoInjectable()
 export class UserService {
@@ -60,8 +61,6 @@ export class UserService {
         phone: input.phone,
         userType: "BUYER",
         salt: salt,
-        first_name: input.first_name,
-        last_name: input.last_name,
       });
       return SuccessResponse(data);
     } catch (error) {
@@ -114,7 +113,6 @@ export class UserService {
   }
 
   async VerifyUser(event: APIGatewayProxyEventV2) {
-    // Normalize headers to handle case sensitivity
     const headers = event.headers || {};
     const token = headers.authorization || headers.Authorization;
     console.log("Headers:", event.headers);
@@ -162,6 +160,26 @@ export class UserService {
 
   // User profile
   async CreateProfile(event: APIGatewayProxyEventV2) {
+    const headers = event.headers || {};
+    const token = headers.authorization || headers.Authorization;
+    console.log("Headers:", event.headers);
+
+    if (!token) {
+      return ErrorResponse(401, "Authorization header missing");
+    }
+
+    const payload = await VerifyToken(token);
+    if (!payload) {
+      return ErrorResponse(403, "Authorization failed");
+    }
+
+    const input = plainToClass(ProfileInput, event.body);
+    const error = await AppValidationError(input);
+    console.log(error);
+    if (error) return ErrorResponse(404, error);
+
+    // DB operation to create or update user profile goes here
+
     return SuccessResponse({ message: "response from User Profile" });
   }
 
