@@ -1,5 +1,5 @@
 import { UserModel } from "../models/UserModel.js";
-import { DBClient } from "../utility/databaseClient.js";
+import { ProfileInput } from "../models/dto/AddressInput.js";
 const { DBOperation } = await import("./dbOperation.js");
 
 export class UserRepository extends DBOperation {
@@ -51,7 +51,44 @@ export class UserRepository extends DBOperation {
     throw new Error("User is already verified");
   }
 
-  async updateUser() {}
+  async updateUser(
+    user_id: number,
+    firstName: string,
+    lastName: string,
+    userType: string
+  ) {
+    const queryString =
+      "UPDATE users SET first_name=$1, lastname=$2, user_type=$3 WHERE user_id=$4 RETURNING *"; //user_id, email, phone, user_type
+    const values = [firstName, lastName, userType, user_id];
+    const result = await this.executeQuery(queryString, values);
+    if (result.rowCount > 0) {
+      return result.rows[0] as UserModel;
+    }
+    throw new Error("error updating user profile");
+  }
 
-  async createProfile() {}
+  async createProfile(
+    user_id: number,
+    {
+      firstName,
+      lastName,
+      userType,
+      address: { addressLine1, addressLine2, city, postCode, country },
+    }: ProfileInput
+  ) {
+    const updateUser = await this.updateUser(
+      user_id,
+      firstName,
+      lastName,
+      userType
+    );
+    const queryString =
+      "INSERT INTO address (user_id, address_line1, address_line2, city, post_code, country) VALUES($1, $2, $3, $4, $5, $6) RETURNING *";
+    const values = [addressLine1, addressLine2, city, postCode, country];
+    const result = await this.executeQuery(queryString, values);
+    if (result.rowCount > 0) {
+      return result.rows[0] as UserModel;
+    }
+    return true;
+  }
 }
