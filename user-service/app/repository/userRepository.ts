@@ -58,7 +58,7 @@ export class UserRepository extends DBOperation {
     userType: string
   ) {
     const queryString =
-      "UPDATE users SET first_name=$1, lastname=$2, user_type=$3 WHERE user_id=$4 RETURNING *"; //user_id, email, phone, user_type
+      "UPDATE users SET first_name=$1, last_name=$2, user_type=$3 WHERE user_id=$4 RETURNING *";
     const values = [firstName, lastName, userType, user_id];
     const result = await this.executeQuery(queryString, values);
     if (result.rowCount > 0) {
@@ -84,10 +84,18 @@ export class UserRepository extends DBOperation {
     );
     const queryString =
       "INSERT INTO address (user_id, address_line1, address_line2, city, post_code, country) VALUES($1, $2, $3, $4, $5, $6) RETURNING *";
-    const values = [addressLine1, addressLine2, city, postCode, country];
+    const values = [
+      user_id,
+      addressLine1,
+      addressLine2,
+      city,
+      postCode,
+      country,
+    ];
     const result = await this.executeQuery(queryString, values);
     if (result.rowCount > 0) {
-      return result.rows[0] as UserModel;
+      result.rows[0] as UserModel;
+      return { updateUser, result };
     }
     return true;
   }

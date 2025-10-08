@@ -178,7 +178,8 @@ export class UserService {
     console.log(error);
     if (error) return ErrorResponse(404, error);
 
-    // DB operation to create or update user profile goes here
+    const result = await this.repository.createProfile(payload.user_id, input);
+    console.log(result);
 
     return SuccessResponse({ message: "response from User Profile" });
   }
