@@ -1,3 +1,4 @@
+import { AddressModel } from "../models/AddressModel.js";
 import { UserModel } from "../models/UserModel.js";
 import { ProfileInput } from "../models/dto/AddressInput.js";
 const { DBOperation } = await import("./dbOperation.js");
@@ -76,12 +77,7 @@ export class UserRepository extends DBOperation {
       address: { addressLine1, addressLine2, city, postCode, country },
     }: ProfileInput
   ) {
-    const updateUser = await this.updateUser(
-      user_id,
-      firstName,
-      lastName,
-      userType
-    );
+    await this.updateUser(user_id, firstName, lastName, userType);
     const queryString =
       "INSERT INTO address (user_id, address_line1, address_line2, city, post_code, country) VALUES($1, $2, $3, $4, $5, $6) RETURNING *";
     const values = [
@@ -94,9 +90,31 @@ export class UserRepository extends DBOperation {
     ];
     const result = await this.executeQuery(queryString, values);
     if (result.rowCount > 0) {
-      result.rows[0] as UserModel;
-      return { updateUser, result };
+      return result.rows[0] as AddressModel;
     }
-    return true;
+    throw new Error("error creating user profile");
+  }
+
+  async getUserProfile(user_id: number) {
+    const profileQuery =
+      "SELECT first_name, last_name, email, phone, user_type, verified FROM users WHERE user_id=$1";
+    const profileValues = [user_id];
+
+    const profileResult = await this.executeQuery(profileQuery, profileValues);
+    if (profileResult.rowCount < 1) {
+      throw new Error("User profile does not exist");
+    }
+
+    const userProfile = profileResult.rows[0] as UserModel;
+
+    const addressQuery =
+      "SELECT id, address_line1, address_line2, city, post_code, country FROM address WHERE user_id=$1";
+    const addressValues = [user_id];
+
+    const addressResult = await this.executeQuery(addressQuery, addressValues);
+    if (addressResult.rowCount > 0) {
+      userProfile.address = addressResult.rows as AddressModel[];
+    }
+    return userProfile;
   }
 }
