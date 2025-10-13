@@ -184,12 +184,26 @@ export class UserService {
     return SuccessResponse({ message: "response from User Profile" });
   }
 
-  async EditProfile(event: APIGatewayProxyEventV2) {
-    return SuccessResponse({ message: "response from Edit User Profile" });
+  async GetProfile(event: APIGatewayProxyEventV2) {
+    const headers = event.headers || {};
+    const token = headers.authorization || headers.Authorization;
+    console.log("Headers:", event.headers);
+
+    if (!token) {
+      return ErrorResponse(401, "Authorization header missing");
+    }
+
+    const payload = await VerifyToken(token);
+    if (!payload) {
+      return ErrorResponse(403, "Authorization failed");
+    }
+
+    const result = await this.repository.getUserProfile(payload.user_id);
+    return SuccessResponse(result);
   }
 
-  async GetProfile(event: APIGatewayProxyEventV2) {
-    return SuccessResponse({ message: "response from Get User Profile" });
+  async EditProfile(event: APIGatewayProxyEventV2) {
+    return SuccessResponse({ message: "response from Edit User Profile" });
   }
 
   // Cart Section
