@@ -160,28 +160,32 @@ export class UserService {
 
   // User profile
   async CreateProfile(event: APIGatewayProxyEventV2) {
-    const headers = event.headers || {};
-    const token = headers.authorization || headers.Authorization;
-    console.log("Headers:", event.headers);
+    try {
+      const headers = event.headers || {};
+      const token = headers.authorization || headers.Authorization;
+      console.log("Headers:", event.headers);
 
-    if (!token) {
-      return ErrorResponse(401, "Authorization header missing");
+      if (!token) {
+        return ErrorResponse(401, "Authorization header missing");
+      }
+
+      const payload = await VerifyToken(token);
+      if (!payload) {
+        return ErrorResponse(403, "Authorization failed");
+      }
+
+      const input = plainToClass(ProfileInput, event.body);
+      const error = await AppValidationError(input);
+      console.log(error);
+      if (error) return ErrorResponse(404, error);
+
+      await this.repository.createProfile(payload.user_id, input);
+
+      return SuccessResponse({ message: "profile created!" });
+    } catch (error) {
+      console.log(error);
+      return ErrorResponse(500, error);
     }
-
-    const payload = await VerifyToken(token);
-    if (!payload) {
-      return ErrorResponse(403, "Authorization failed");
-    }
-
-    const input = plainToClass(ProfileInput, event.body);
-    const error = await AppValidationError(input);
-    console.log(error);
-    if (error) return ErrorResponse(404, error);
-
-    const result = await this.repository.createProfile(payload.user_id, input);
-    console.log(result);
-
-    return SuccessResponse({ message: "response from User Profile" });
   }
 
   async GetProfile(event: APIGatewayProxyEventV2) {
@@ -203,7 +207,27 @@ export class UserService {
   }
 
   async EditProfile(event: APIGatewayProxyEventV2) {
-    return SuccessResponse({ message: "response from Edit User Profile" });
+    const headers = event.headers || {};
+    const token = headers.authorization || headers.Authorization;
+    console.log("Headers:", event.headers);
+
+    if (!token) {
+      return ErrorResponse(401, "Authorization header missing");
+    }
+
+    const payload = await VerifyToken(token);
+    if (!payload) {
+      return ErrorResponse(403, "Authorization failed");
+    }
+
+    const input = plainToClass(ProfileInput, event.body);
+    const error = await AppValidationError(input);
+    console.log(error);
+    if (error) return ErrorResponse(404, error);
+
+    await this.repository.editProfile(payload.user_id, input);
+
+    return SuccessResponse({ message: "profile updated" });
   }
 
   // Cart Section
