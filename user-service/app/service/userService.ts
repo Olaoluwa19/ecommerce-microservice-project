@@ -96,66 +96,83 @@ export class UserService {
   }
 
   async GetVerificationToken(event: APIGatewayProxyEventV2) {
-    const token = event.headers.authorization;
-    const payload = await VerifyToken(token);
-    if (!payload) return ErrorResponse(403, "authorization failed");
+    try {
+      const token = event.headers.authorization;
+      const payload = await VerifyToken(token);
+      if (!payload) return ErrorResponse(403, "authorization failed");
 
-    const { code, expiry } = GenerateAccessCode();
-    // save to DB to confirm verification
-    await this.repository.updateVerificationCode(payload.user_id, code, expiry);
-    console.log({ "Access code": code, "code expires in": expiry });
-    // send code to user phone number
-    // await SendVerificationCode(code, payload.phone);
+      const { code, expiry } = GenerateAccessCode();
+      // save to DB to confirm verification
+      await this.repository.updateVerificationCode(
+        payload.user_id,
+        code,
+        expiry
+      );
+      console.log({ "Access code": code, "code expires in": expiry });
+      // send code to user phone number
+      // await SendVerificationCode(code, payload.phone);
 
-    return SuccessResponse({
-      message: "Verification code is sent to your registered phone number.",
-    });
+      return SuccessResponse({
+        message: "Verification code is sent to your registered phone number.",
+      });
+    } catch (error) {
+      console.log(error);
+      return ErrorResponse(500, error);
+    }
   }
 
   async VerifyUser(event: APIGatewayProxyEventV2) {
-    const headers = event.headers || {};
-    const token = headers.authorization || headers.Authorization;
-    console.log("Headers:", event.headers);
+    try {
+      const headers = event.headers || {};
+      const token = headers.authorization || headers.Authorization;
+      console.log("Headers:", event.headers);
 
-    if (!token) {
-      return ErrorResponse(401, "Authorization header missing");
-    }
-
-    const payload = await VerifyToken(token);
-    if (!payload) {
-      return ErrorResponse(403, "Authorization failed");
-    }
-
-    const input = plainToClass(VerificationInput, event.body);
-    const error = await AppValidationError(input);
-    if (error) {
-      return ErrorResponse(400, error);
-    }
-
-    const { verification_code, expiry } = await this.repository.findAccount(
-      payload.email
-    );
-
-    //find user by id and compare code
-    if (verification_code === parseInt(input.code)) {
-      // check if code is expired
-      const currentTime = new Date();
-      const diff = TimeDifference(
-        expiry.toISOString(),
-        currentTime.toISOString(),
-        "m"
-      );
-      if (diff > 0) {
-        console.log("Verified successfully");
-        await this.repository.updateVerifyUser(payload.user_id);
-      } else {
-        return ErrorResponse(403, "Code has expired, please request new code");
+      if (!token) {
+        return ErrorResponse(401, "Authorization header missing");
       }
-    } else {
-      return ErrorResponse(400, "Invalid verification code");
-    }
 
-    return SuccessResponse({ message: "User verified" });
+      const payload = await VerifyToken(token);
+      if (!payload) {
+        return ErrorResponse(403, "Authorization failed");
+      }
+
+      const input = plainToClass(VerificationInput, event.body);
+      const error = await AppValidationError(input);
+      if (error) {
+        return ErrorResponse(400, error);
+      }
+
+      const { verification_code, expiry } = await this.repository.findAccount(
+        payload.email
+      );
+
+      //find user by id and compare code
+      if (verification_code === parseInt(input.code)) {
+        // check if code is expired
+        const currentTime = new Date();
+        const diff = TimeDifference(
+          expiry.toISOString(),
+          currentTime.toISOString(),
+          "m"
+        );
+        if (diff > 0) {
+          console.log("Verified successfully");
+          await this.repository.updateVerifyUser(payload.user_id);
+        } else {
+          return ErrorResponse(
+            403,
+            "Code has expired, please request new code"
+          );
+        }
+      } else {
+        return ErrorResponse(400, "Invalid verification code");
+      }
+
+      return SuccessResponse({ message: "User verified" });
+    } catch (error) {
+      console.log(error);
+      return ErrorResponse(500, error);
+    }
   }
 
   // User profile
@@ -189,45 +206,55 @@ export class UserService {
   }
 
   async GetProfile(event: APIGatewayProxyEventV2) {
-    const headers = event.headers || {};
-    const token = headers.authorization || headers.Authorization;
-    console.log("Headers:", event.headers);
+    try {
+      const headers = event.headers || {};
+      const token = headers.authorization || headers.Authorization;
+      console.log("Headers:", event.headers);
 
-    if (!token) {
-      return ErrorResponse(401, "Authorization header missing");
+      if (!token) {
+        return ErrorResponse(401, "Authorization header missing");
+      }
+
+      const payload = await VerifyToken(token);
+      if (!payload) {
+        return ErrorResponse(403, "Authorization failed");
+      }
+
+      const result = await this.repository.getUserProfile(payload.user_id);
+      return SuccessResponse(result);
+    } catch (error) {
+      console.log(error);
+      return ErrorResponse(500, error);
     }
-
-    const payload = await VerifyToken(token);
-    if (!payload) {
-      return ErrorResponse(403, "Authorization failed");
-    }
-
-    const result = await this.repository.getUserProfile(payload.user_id);
-    return SuccessResponse(result);
   }
 
   async EditProfile(event: APIGatewayProxyEventV2) {
-    const headers = event.headers || {};
-    const token = headers.authorization || headers.Authorization;
-    console.log("Headers:", event.headers);
+    try {
+      const headers = event.headers || {};
+      const token = headers.authorization || headers.Authorization;
+      console.log("Headers:", event.headers);
 
-    if (!token) {
-      return ErrorResponse(401, "Authorization header missing");
+      if (!token) {
+        return ErrorResponse(401, "Authorization header missing");
+      }
+
+      const payload = await VerifyToken(token);
+      if (!payload) {
+        return ErrorResponse(403, "Authorization failed");
+      }
+
+      const input = plainToClass(ProfileInput, event.body);
+      const error = await AppValidationError(input);
+      console.log(error);
+      if (error) return ErrorResponse(404, error);
+
+      await this.repository.editProfile(payload.user_id, input);
+
+      return SuccessResponse({ message: "profile updated" });
+    } catch (error) {
+      console.log(error);
+      return ErrorResponse(500, error);
     }
-
-    const payload = await VerifyToken(token);
-    if (!payload) {
-      return ErrorResponse(403, "Authorization failed");
-    }
-
-    const input = plainToClass(ProfileInput, event.body);
-    const error = await AppValidationError(input);
-    console.log(error);
-    if (error) return ErrorResponse(404, error);
-
-    await this.repository.editProfile(payload.user_id, input);
-
-    return SuccessResponse({ message: "profile updated" });
   }
 
   // Cart Section
