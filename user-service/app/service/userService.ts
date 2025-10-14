@@ -97,9 +97,18 @@ export class UserService {
 
   async GetVerificationToken(event: APIGatewayProxyEventV2) {
     try {
-      const token = event.headers.authorization;
+      const headers = event.headers || {};
+      const token = headers.authorization || headers.Authorization;
+      console.log("Headers:", event.headers);
+
+      if (!token) {
+        return ErrorResponse(401, "Authorization header missing");
+      }
+
       const payload = await VerifyToken(token);
-      if (!payload) return ErrorResponse(403, "authorization failed");
+      if (!payload) {
+        return ErrorResponse(403, "Authorization failed");
+      }
 
       const { code, expiry } = GenerateAccessCode();
       // save to DB to confirm verification
