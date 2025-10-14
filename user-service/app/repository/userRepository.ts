@@ -124,7 +124,7 @@ export class UserRepository extends DBOperation {
       firstName,
       lastName,
       userType,
-      address: { addressLine1, addressLine2, city, postCode, country },
+      address: { addressLine1, addressLine2, city, postCode, country, id },
     }: ProfileInput
   ) {
     await this.updateUser(user_id, firstName, lastName, userType);
@@ -137,7 +137,7 @@ export class UserRepository extends DBOperation {
       city,
       postCode,
       country,
-      user_id,
+      id,
     ];
 
     const addressResult = await this.executeQuery(addressQuery, addressValues);
