@@ -30,3 +30,12 @@ yarn add pg
 yarn add --dev @types/pg
 yarn add jsonwebtoken && yarn add --dev @types/jsonwebtoken
 yarn add twilio
+
+
+npm install -g aws-cdk
+cdk --version
+
+cd ..
+mkdir product_service
+cdk init app --language=typescript
+vsc
