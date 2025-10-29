@@ -1,2 +1,7 @@
 npm i @types/aws-lambda --dev
 npm i ts-node typescript --dev
+
+cdk bootstrap
+cdk synth
+cdk deploy --verbose --trace
+cdk destroy --verbose
