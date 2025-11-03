@@ -18,14 +18,14 @@ export const handler = async (
       }
       break;
     case "get":
-    // return isRoot ? " // call get Products" : "call get product by id"
+      return isRoot ? service.getProducts() : service.getProduct();
     case "put":
       if (!isRoot) {
-        // call edit product
+        return service.editProduct();
       }
     case "delete":
       if (!isRoot) {
-        // delete product
+        return service.deleteProduct();
       }
   }
 
