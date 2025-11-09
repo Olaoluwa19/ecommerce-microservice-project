@@ -14,18 +14,18 @@ export const handler = async (
   switch (event.httpMethod.toLowerCase()) {
     case "post":
       if (isRoot) {
-        return service.createProduct();
+        return service.createProduct(event);
       }
       break;
     case "get":
-      return isRoot ? service.getProducts() : service.getProduct();
+      return isRoot ? service.getProducts(event) : service.getProduct(event);
     case "put":
       if (!isRoot) {
-        return service.editProduct();
+        return service.editProduct(event);
       }
     case "delete":
       if (!isRoot) {
-        return service.deleteProduct();
+        return service.deleteProduct(event);
       }
   }
 
