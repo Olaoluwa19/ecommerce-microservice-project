@@ -7,6 +7,3 @@ node_modules
 .cdk.staging
 cdk.out
 
-
-*.txt
-.txt

@@ -1,7 +1,6 @@
 node_modules
 .serverless
 .build
-note.txt
 node_modules/
 dist/
 *.js
