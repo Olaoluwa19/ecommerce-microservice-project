@@ -1,4 +1,4 @@
-import { APIGateWayEvent } from "aws-lambda";
+import { APIGatewayEvent } from "aws-lambda";
 import { ProductRepository } from "../repository/product-repository";
 import { ErrorResponse, SuccessResponse } from "../utility/response";
 import { plainToClass } from "class-transformer";
@@ -11,7 +11,7 @@ export class ProductService {
     this._repository = repository;
   }
 
-  async createProduct(event: APIGateWayEvent) {
+  async createProduct(event: APIGatewayEvent) {
     const input = plainToClass(ProductInput, event.body);
     const error = await AppValidationError(input);
     console.log(error);
@@ -22,19 +22,19 @@ export class ProductService {
     return SuccessResponse(data);
   }
 
-  async getProducts(event: APIGateWayEvent) {
+  async getProducts(event: APIGatewayEvent) {
     return SuccessResponse({ msg: "get Products" });
   }
 
-  async getProduct(event: APIGateWayEvent) {
+  async getProduct(event: APIGatewayEvent) {
     return SuccessResponse({ msg: "get Product by id" });
   }
 
-  async editProduct(event: APIGateWayEvent) {
+  async editProduct(event: APIGatewayEvent) {
     return SuccessResponse({ msg: "edit Product" });
   }
 
-  async deleteProduct(event: APIGateWayEvent) {
+  async deleteProduct(event: APIGatewayEvent) {
     return SuccessResponse({ msg: "delete Product" });
   }
 }
