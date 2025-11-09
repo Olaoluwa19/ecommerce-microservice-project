@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-export type ProductDoc = mongoose.Document & {
+type ProductModel = {
   name: string;
   description: string;
   ctategory_id: string;
@@ -8,6 +8,8 @@ export type ProductDoc = mongoose.Document & {
   price: number;
   availability: boolean;
 };
+
+export type ProductDoc = mongoose.Document & ProductModel;
 
 const ProductSchema = new mongoose.Schema(
   {
