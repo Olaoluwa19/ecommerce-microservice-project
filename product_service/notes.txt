@@ -5,3 +5,17 @@ cdk bootstrap
 cdk synth
 cdk deploy --verbose --trace
 cdk destroy --verbose
+
+STEPS TO FIX SAM NOT WORKING:
+alias sam="sam.cmd"
+echo 'alias sam="sam.cmd"' >> ~/.bashrc
+source ~/.bashrc
+
+2
+
+@rem
+@echo off
+
+setlocal
+
+"%~dp0/../runtime/python.exe" -m samcli %*
