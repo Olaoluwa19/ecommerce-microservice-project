@@ -8,6 +8,9 @@ cdk destroy --verbose
 
 npm install -g aws-cdk
 
+INSTALL SAM
+choco install awssamcli
+
 STEPS TO FIX SAM NOT WORKING:
 alias sam="sam.cmd"
 echo 'alias sam="sam.cmd"' >> ~/.bashrc
@@ -29,4 +32,5 @@ rm -rf cdk.out
 
 setlocal
 
-"%~dp0/../runtime/python.exe" -m samcli %*
+
+cdk synth && sam local start-api -t cdk.out/ProductServiceStack.template.json -p 3000
