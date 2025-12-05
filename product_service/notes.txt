@@ -6,12 +6,23 @@ cdk synth
 cdk deploy --verbose --trace
 cdk destroy --verbose
 
+npm install -g aws-cdk
+
 STEPS TO FIX SAM NOT WORKING:
 alias sam="sam.cmd"
 echo 'alias sam="sam.cmd"' >> ~/.bashrc
 source ~/.bashrc
 
 2
+
+HOW TO SET MONGODB UP IN DOCKER
+docker run -d --name product_service_db -p 27017:27017 -v mongo-data:/data/db mongo:latest
+docker ps
+
+HOW TO FIX AWS BUNDLING ISSUE WITH SAM
+npm pkg set aws:cdk:bundling.externals[0]="@aws-sdk/*"
+npm install @aws-sdk/credential-providers@3.658.0 --save
+rm -rf cdk.out
 
 @rem
 @echo off
