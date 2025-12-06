@@ -1,37 +1,102 @@
-const formatResponse = (
+// export default formatResponse = (
+//   statusCode: number,
+//   message: string,
+//   data?: unknown
+// ) => {
+//   const response = {
+//     statusCode,
+//     headers: {
+//       "Access-Control-Allow-Origin": "*", // Corrected header name
+//       "Content-Type": "application/json", // Explicitly set Content-Type
+//       "Access-Control-Allow-Headers": "Content-Type", // Optional: for CORS
+//       "Access-Control-Allow-Methods": "OPTIONS,POST,GET", // Optional: for CORS
+//     },
+//     body: JSON.stringify({
+//       message,
+//       ...(data && { data }), // Conditionally include data if provided
+//     }),
+//   };
+//   return response;
+// };
+
+// export const SuccessResponse = (data: object) => {
+//   return formatResponse(200, "Success", data);
+// };
+
+// export const ErrorResponse = (code = 1000, error: unknown) => {
+//   if (Array.isArray(error)) {
+//     const errorObject = error[0].constraints;
+//     const errorMessage =
+//       errorObject[Object.keys(errorObject)[0]] || "Error Occured";
+//     console.log(error);
+//     return formatResponse(code, errorMessage, errorMessage);
+//   }
+//   console.log(error);
+//   return formatResponse(code, `${error}`, error);
+// };
+
+import { ValidationError } from "class-validator";
+
+export const formatResponse = (
   statusCode: number,
   message: string,
   data?: unknown
-) => {
-  const response = {
-    statusCode,
-    headers: {
-      "Access-Control-Allow-Origin": "*", // Corrected header name
-      "Content-Type": "application/json", // Explicitly set Content-Type
-      "Access-Control-Allow-Headers": "Content-Type", // Optional: for CORS
-      "Access-Control-Allow-Methods": "OPTIONS,POST,GET", // Optional: for CORS
-    },
-    body: JSON.stringify({
-      message,
-      ...(data && { data }), // Conditionally include data if provided
-    }),
-  };
-  return response;
+) => ({
+  statusCode,
+  headers: {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers":
+      "Content-Type,X-Amz-Date,Authorization,x-api-key,x-requested-with",
+    "Access-Control-Allow-Methods": "OPTIONS,POST,GET,PUT,DELETE,PATCH",
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    message,
+    ...(data !== undefined && { data }),
+  }),
+});
+
+// Success responses
+export const SuccessResponse = (data: object, statusCode = 200) => {
+  return formatResponse(statusCode, "Success", data);
 };
 
-export default formatResponse;
-export const SuccessResponse = (data: object) => {
-  return formatResponse(200, "Success", data);
+export const CreatedResponse = (data: object) => {
+  return SuccessResponse(data, 201);
 };
 
-export const ErrorResponse = (code = 1000, error: unknown) => {
-  if (Array.isArray(error)) {
-    const errorObject = error[0].constraints;
-    const errorMessage =
-      errorObject[Object.keys(errorObject)[0]] || "Error Occured";
-    console.log(error);
-    return formatResponse(code, errorMessage, errorMessage);
+// Error responses
+export const ErrorResponse = (statusCode: number, error: unknown) => {
+  // Handle class-validator errors properly
+  if (
+    Array.isArray(error) &&
+    error.every((e): e is ValidationError => e instanceof ValidationError)
+  ) {
+    const formattedErrors = error.map((err) => ({
+      field: err.property,
+      value: err.value,
+      constraints: err.constraints,
+    }));
+
+    return formatResponse(statusCode, "Validation failed", formattedErrors);
   }
-  console.log(error);
-  return formatResponse(code, `${error}`, error);
+
+  // Handle regular Error objects
+  if (error instanceof Error) {
+    return formatResponse(statusCode, error.message);
+  }
+
+  // Fallback
+  const message =
+    typeof error === "string" ? error : "An unexpected error occurred";
+  return formatResponse(statusCode, message);
 };
+
+// Convenience wrappers
+export const BadRequest = (error: unknown) => ErrorResponse(400, error);
+export const NotFound = (message = "Resource not found") =>
+  ErrorResponse(404, message);
+export const Unauthorized = (message = "Unauthorized") =>
+  ErrorResponse(401, message);
+export const InternalError = (error?: unknown) =>
+  ErrorResponse(500, error || "Internal server error");
