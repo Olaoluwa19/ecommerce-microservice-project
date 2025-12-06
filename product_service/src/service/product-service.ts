@@ -12,7 +12,7 @@ export class ProductService {
   }
 
   async createProduct(event: APIGatewayEvent) {
-    const input = plainToClass(ProductInput, event.body);
+    const input = plainToClass(ProductInput, JSON.parse(event.body!));
     const error = await AppValidationError(input);
     console.log(error);
     if (error) return ErrorResponse(404, error);
@@ -23,18 +23,37 @@ export class ProductService {
   }
 
   async getProducts(event: APIGatewayEvent) {
-    return SuccessResponse({ msg: "get Products" });
+    const data = await this._repository.getAllProducts();
+    return SuccessResponse(data);
   }
 
   async getProduct(event: APIGatewayEvent) {
-    return SuccessResponse({ msg: "get Product by id" });
+    const productId = event.pathParameters?.id;
+    if (!productId) return ErrorResponse(403, "Product id is required");
+    const data = await this._repository.getProductById(productId);
+    return SuccessResponse(data);
   }
 
   async editProduct(event: APIGatewayEvent) {
-    return SuccessResponse({ msg: "edit Product" });
+    const productId = event.pathParameters?.id;
+    if (!productId) return ErrorResponse(403, "Product id is required");
+    const input = plainToClass(ProductInput, JSON.parse(event.body!));
+    const error = await AppValidationError(input);
+    console.log(error);
+    if (error) return ErrorResponse(404, error);
+
+    input.id = productId;
+
+    const data = await this._repository.updateProduct(input);
+
+    return SuccessResponse(data);
   }
 
   async deleteProduct(event: APIGatewayEvent) {
+    const productId = event.pathParameters?.id;
+    if (!productId) return ErrorResponse(403, "Product id is required");
+    const data = await this._repository.deleteProduct(productId);
+    return SuccessResponse(data);
     return SuccessResponse({ msg: "delete Product" });
   }
 }
