@@ -1,6 +1,11 @@
 import { APIGatewayEvent } from "aws-lambda";
 import { ProductRepository } from "../repository/product-repository";
-import { ErrorResponse, SuccessResponse } from "../utility/response";
+import {
+  BadRequest,
+  CreatedResponse,
+  ErrorResponse,
+  SuccessResponse,
+} from "../utility/response";
 import { plainToClass } from "class-transformer";
 import { AppValidationError } from "../utility/errors";
 import { ProductInput } from "../dto/product-input";
@@ -12,15 +17,59 @@ export class ProductService {
   }
 
   async createProduct(event: APIGatewayEvent) {
-    const input = plainToClass(ProductInput, JSON.parse(event.body!));
-    const error = await AppValidationError(input);
-    console.log(error);
-    if (error) return ErrorResponse(404, error);
+    if (!event.body) {
+      return BadRequest("Request body is required");
+    }
+
+    let payload;
+    try {
+      payload = JSON.parse(event.body);
+    } catch (e) {
+      return BadRequest("Invalid JSON");
+    }
+
+    const input = plainToClass(ProductInput, payload);
+    const errors = await AppValidationError(input);
+
+    if (errors && errors.length > 0) {
+      return BadRequest(errors); // ← Now returns full, structured errors!
+    }
 
     const data = await this._repository.createProduct(input);
-
-    return SuccessResponse(data);
+    return CreatedResponse(data); // ← 201 + proper body
   }
+
+  // async createProduct(event: APIGatewayEvent) {
+  //   // const input = plainToClass(ProductInput, JSON.parse(event.body!));
+  //   // const error = await AppValidationError(input);
+  //   // console.log(error);
+  //   // if (error) return ErrorResponse(404, error);
+
+  //   // const data = await this._repository.createProduct(input);
+
+  //   // return SuccessResponse(data);
+
+  //   if (!event.body) {
+  //   return ErrorResponse(400, "Request body is required");
+  // }
+
+  // let body;
+  // try {
+  //   body = JSON.parse(event.body);
+  // } catch (err) {
+  //   return ErrorResponse(400, "Invalid JSON payload");
+  // }
+
+  // const input = plainToClass(ProductInput, body);
+  // const errors = await AppValidationError(input);
+
+  // if (errors && errors.length > 0) {
+  //   return ErrorResponse(400, { message: "Validation failed", errors });
+  // }
+
+  // const data = await this._repository.createProduct(input);
+  // return SuccessResponse(data, 201); // 201 Created is better for POST
+  // }
 
   async getProducts(event: APIGatewayEvent) {
     const data = await this._repository.getAllProducts();
