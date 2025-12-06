@@ -1,14 +1,13 @@
-# template.yaml
-Parameters:
-  MongoDbUri:
-    Type: String
-    Default: "mongodb://127.0.0.1:27017/product_service_db"
-
-Globals:
-  Function:
-    Environment:
-      Variables:
-        MONGODB_URI:
-          Ref: MongoDbUri
-    Timeout: 30
-    MemorySize: 512
+Resources:
+  ProductServiceFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: product_service/
+      Handler: index.handler
+      Runtime: nodejs20.x
+      Environment:
+        Variables:
+          MONGODB_URI: >-
+            mongodb://host.docker.internal:27017/product_service_db
+          # Or if using local MongoDB container for sam local:
+          # MONGODB_URI: mongodb://host.docker.internal:27017/ecommerce-db
