@@ -1,5 +1,5 @@
 import { ProductInput } from "../dto/product-input";
-import { products } from "../models/product-models";
+import { ProductDoc, products } from "../models/product-models";
 
 export class ProductRepository {
   constructor() {}
@@ -21,11 +21,39 @@ export class ProductRepository {
     });
   }
 
-  async getAllProducts(offset = 0, pages?: number) {}
+  async getAllProducts(offset = 0, pages?: number) {
+    return products
+      .find()
+      .skip(offset)
+      .limit(pages ? pages : 500);
+  }
 
-  async getProductById(id: string) {}
+  async getProductById(id: string) {
+    return products.findById(id);
+  }
 
-  // async updateProduct({ name, description, price, category_id, image_url }) {}
+  async updateProduct({
+    id,
+    name,
+    description,
+    price,
+    category_id,
+    image_url,
+    availability,
+  }: ProductInput) {
+    let existingProduct = (await products.findById(id)) as ProductDoc;
 
-  async deleteProduct(id: string) {}
+    existingProduct.name = name;
+    existingProduct.description = description;
+    existingProduct.price = price;
+    existingProduct.category_id = category_id;
+    existingProduct.image_url = image_url;
+    existingProduct.availability = availability;
+
+    return existingProduct.save();
+  }
+
+  async deleteProduct(id: string) {
+    return products.deleteOne({ _id: id });
+  }
 }
