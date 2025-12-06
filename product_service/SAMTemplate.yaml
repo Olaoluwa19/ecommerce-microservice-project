@@ -1,0 +1,14 @@
+# template.yaml
+Parameters:
+  MongoDbUri:
+    Type: String
+    Default: "mongodb://127.0.0.1:27017/product_service_db"
+
+Globals:
+  Function:
+    Environment:
+      Variables:
+        MONGODB_URI:
+          Ref: MongoDbUri
+    Timeout: 30
+    MemorySize: 512
