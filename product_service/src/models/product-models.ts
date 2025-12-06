@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 type ProductModel = {
   name: string;
   description: string;
-  ctategory_id: string;
+  category_id: string;
   image_url: string;
   price: number;
   availability: boolean;
@@ -15,7 +15,7 @@ const ProductSchema = new mongoose.Schema(
   {
     name: String,
     description: String,
-    ctategory_id: String,
+    category_id: String,
     image_url: String,
     price: Number,
     availability: Boolean,
