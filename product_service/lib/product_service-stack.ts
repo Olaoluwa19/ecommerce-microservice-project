@@ -14,6 +14,9 @@ export class ProductServiceStack extends cdk.Stack {
       new ServiceStack(this, "ProductService", {
         bucket: bucket.bucketName,
       });
+
+    bucket.grantReadWrite(imageService);
+
     new ApiGatewayStack(this, "ProductApiGateway", {
       productService,
       categoryService,
