@@ -3,7 +3,6 @@ import { ErrorResponse } from "./utility/response";
 import { ProductService } from "./service/product-service";
 import { ProductRepository } from "./repository/product-repository";
 import { connectDB } from "./utility/mongodb";
-// // import "./utility"
 
 const service = new ProductService(new ProductRepository());
 
