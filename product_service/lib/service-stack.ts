@@ -8,7 +8,7 @@ import { Construct } from "constructs";
 import { join } from "path";
 
 interface ServiceProps {
-  bucket?: any;
+  bucket: string;
 }
 
 export class ServiceStack extends Construct {
@@ -25,7 +25,7 @@ export class ServiceStack extends Construct {
         externalModules: ["aws-sdk"],
       },
       environment: {
-        BUCKET_NAME: "OUR_BUCKET_ARN",
+        BUCKET_NAME: props.bucket,
       },
       runtime: Runtime.NODEJS_18_X,
       timeout: Duration.seconds(10),
@@ -46,7 +46,7 @@ export class ServiceStack extends Construct {
       ...nodeJsFunctionProps,
     });
 
-    this.imageService = new NodejsFunction(this, "imageLambda", {
+    this.imageService = new NodejsFunction(this, "imageUploadLambda", {
       entry: join(__dirname, "/../src/image-api.ts"),
       ...nodeJsFunctionProps,
     });
