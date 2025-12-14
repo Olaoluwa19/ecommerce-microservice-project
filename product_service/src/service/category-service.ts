@@ -1,6 +1,7 @@
 import { APIGatewayEvent } from "aws-lambda";
 import { CategoryRepository } from "../repository/category-repository";
 import jsonBodyParser from "@middy/http-json-body-parser";
+import { ErrorResponse } from "../utility/response";
 
 export class CategoryService {
   _repsitory: CategoryRepository;
