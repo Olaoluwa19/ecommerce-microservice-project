@@ -34,36 +34,3 @@ export const handler = async (
 
   return ErrorResponse(404, "requetsted method not allowed");
 };
-
-// import { APIGatewayProxyHandler } from "aws-lambda";
-// import { ProductService } from "./service/product-service";
-// import { ProductRepository } from "./repository/product-repository";
-
-// const service = new ProductService(new ProductRepository());
-
-// export const handler: APIGatewayProxyHandler = async (event) => {
-//   await connectDB();
-
-//   const hasPathParams =
-//     event.pathParameters && Object.keys(event.pathParameters).length > 0;
-
-//   switch (event.httpMethod.toUpperCase()) {
-//     case "POST":
-//       if (!hasPathParams) return service.createProduct(event);
-//       break;
-
-//     case "GET":
-//       if (!hasPathParams) return service.getProducts(event);
-//       else return service.getProduct(event);
-
-//     case "PUT":
-//       if (hasPathParams) return service.editProduct(event);
-//       break;
-
-//     case "DELETE":
-//       if (hasPathParams) return service.deleteProduct(event);
-//       break;
-//   }
-
-//   return ErrorResponse(404, "Method Not Allowed");
-// };
