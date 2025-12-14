@@ -36,6 +36,6 @@ export const handler = middy(
         }
     }
 
-    return ErrorResponse(404, "requetsted method not allowed");
+    return service.ResponseWithError(event);
   }
 ).use(service.conditionalBodyParser());
