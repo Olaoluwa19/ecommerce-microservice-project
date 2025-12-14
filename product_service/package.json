@@ -22,6 +22,8 @@
   },
   "dependencies": {
     "@aws-sdk/credential-providers": "^3.658.0",
+    "@middy/core": "^6.4.5",
+    "@middy/http-json-body-parser": "^6.4.5",
     "@types/aws-lambda": "^8.10.156",
     "@types/uuid": "^10.0.0",
     "aws-cdk-lib": "2.215.0",

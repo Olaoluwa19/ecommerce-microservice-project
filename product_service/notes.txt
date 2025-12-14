@@ -3,6 +3,7 @@ npm i ts-node typescript --dev
 npm install aws-sdk
 npm install uuid
 npm i --dev @types/uuid
+npm i @middy/http-json-body-parser @middy/core
 
 cdk bootstrap
 cdk synth
