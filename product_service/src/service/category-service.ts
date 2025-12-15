@@ -52,35 +52,38 @@ export class CategoryService {
 
   async getCategories(event: APIGatewayEvent) {
     const data = await this._repository.getAllCategories();
-    if (data.length === 0) {
+    if (!data) {
       return NotFound();
     }
     return SuccessResponse(data);
   }
 
   async getCategory(event: APIGatewayEvent) {
-    //   const CategoryId = event.pathParameters?.id;
-    //   if (!CategoryId) return ErrorResponse(403, "Category id is required");
-    //   const data = await this._repository.getCategoryById(CategoryId);
-    //   return SuccessResponse(data);
+    const categoryId = event.pathParameters?.id;
+    if (!categoryId) return BadRequest("Category id is required");
+    const data = await this._repository.getCategoryById(categoryId);
+    if (!data) {
+      return NotFound();
+    }
+    return SuccessResponse(data);
   }
 
   async editCategory(event: APIGatewayEvent) {
-    //   const CategoryId = event.pathParameters?.id;
-    //   if (!CategoryId) return ErrorResponse(403, "Category id is required");
+    //   const categoryId = event.pathParameters?.id;
+    //   if (!categoryId) return ErrorResponse(403, "Category id is required");
     //   const input = plainToClass(CategoryInput, JSON.parse(event.body!));
     //   const error = await AppValidationError(input);
     //   console.log(error);
     //   if (error) return ErrorResponse(404, error);
-    //   input.id = CategoryId;
+    //   input.id = categoryId;
     //   const data = await this._repository.updateCategory(input);
     //   return SuccessResponse(data);
   }
 
   async deleteCategory(event: APIGatewayEvent) {
-    //   const CategoryId = event.pathParameters?.id;
-    //   if (!CategoryId) return ErrorResponse(403, "Category id is required");
-    //   const data = await this._repository.deleteCategory(CategoryId);
+    //   const categoryId = event.pathParameters?.id;
+    //   if (!categoryId) return ErrorResponse(403, "Category id is required");
+    //   const data = await this._repository.deleteCategory(categoryId);
     //   return SuccessResponse(data);
   }
 }
