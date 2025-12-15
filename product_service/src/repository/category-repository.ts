@@ -1,4 +1,4 @@
-import { CategoryInput } from "../dto/category-input";
+import { AddItemInput, CategoryInput } from "../dto/category-input";
 import { categories, CategoryDoc } from "../models/category-model";
 import { InternalError, NotFound } from "../utility/response";
 
@@ -85,6 +85,37 @@ export class CategoryRepository {
   async deleteCategory(id: string) {
     try {
       return await categories.deleteOne({ _id: id });
+    } catch (error) {
+      return InternalError(error);
+    }
+  }
+
+  async addItem({ id, products }: AddItemInput) {
+    try {
+      let category = (await categories.findById(id)) as CategoryDoc;
+      if (!category) {
+        return NotFound("Category not found");
+      }
+      category.products = [...category.products, ...products];
+      await category.save();
+      return category;
+    } catch (error) {
+      return InternalError(error);
+    }
+  }
+
+  async removeItem({ id, products }: AddItemInput) {
+    try {
+      let category = (await categories.findById(id)) as CategoryDoc;
+      if (!category) {
+        return NotFound("Category not found");
+      }
+      const excludeProducts = category.products.filter(
+        (item) => !products.includes(item)
+      );
+      category.products = excludeProducts;
+      await category.save();
+      return category;
     } catch (error) {
       return InternalError(error);
     }
