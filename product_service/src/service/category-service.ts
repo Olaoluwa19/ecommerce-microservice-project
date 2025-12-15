@@ -69,15 +69,22 @@ export class CategoryService {
   }
 
   async editCategory(event: APIGatewayEvent) {
-    //   const categoryId = event.pathParameters?.id;
-    //   if (!categoryId) return ErrorResponse(403, "Category id is required");
-    //   const input = plainToClass(CategoryInput, JSON.parse(event.body!));
-    //   const error = await AppValidationError(input);
-    //   console.log(error);
-    //   if (error) return ErrorResponse(404, error);
-    //   input.id = categoryId;
-    //   const data = await this._repository.updateCategory(input);
-    //   return SuccessResponse(data);
+    const categoryId = event.pathParameters?.id;
+    if (!categoryId) return BadRequest("Category id is required");
+    let payload;
+    try {
+      payload = JSON.parse(event.body!);
+    } catch (e) {
+      return BadRequest("Invalid JSON");
+    }
+    const input = plainToClass(CategoryInput, payload);
+    const errors = await AppValidationError(input);
+    if (errors && errors.length > 0) {
+      return BadRequest(errors); // ← Now returns full, structured errors!
+    }
+    input.id = categoryId;
+    const data = await this._repository.updateCategory(input);
+    return SuccessResponse(data);
   }
 
   async deleteCategory(event: APIGatewayEvent) {
