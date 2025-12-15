@@ -29,7 +29,26 @@ export class CategoryRepository {
       // return the created category
       return newCategory;
     } catch (error) {
-      InternalError(error);
+      return InternalError(error);
+    }
+  }
+
+  async getAllCategories(offset = 0, perPage?: number) {
+    try {
+      return categories
+        .find({ parentId: null })
+        .populate({
+          path: "subCategories",
+          model: "categories",
+          populate: {
+            path: "subCategories",
+            model: "categories",
+          },
+        })
+        .skip(offset)
+        .limit(perPage ? perPage : 100);
+    } catch (error) {
+      return InternalError(error);
     }
   }
 }

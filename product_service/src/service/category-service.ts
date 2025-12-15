@@ -5,6 +5,8 @@ import {
   BadRequest,
   CreatedResponse,
   ErrorResponse,
+  NotFound,
+  SuccessResponse,
 } from "../utility/response";
 import { CategoryInput } from "../dto/category-input";
 import { plainToClass } from "class-transformer";
@@ -49,8 +51,11 @@ export class CategoryService {
   }
 
   async getCategories(event: APIGatewayEvent) {
-    //   const data = await this._repository.getAllCategories();
-    //   return SuccessResponse(data);
+    const data = await this._repository.getAllCategories();
+    if (data.length === 0) {
+      return NotFound();
+    }
+    return SuccessResponse(data);
   }
 
   async getCategory(event: APIGatewayEvent) {
