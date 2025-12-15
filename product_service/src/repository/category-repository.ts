@@ -81,4 +81,12 @@ export class CategoryRepository {
       return InternalError(error);
     }
   }
+
+  async deleteCategory(id: string) {
+    try {
+      return await categories.deleteOne({ _id: id });
+    } catch (error) {
+      return InternalError(error);
+    }
+  }
 }
