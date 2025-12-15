@@ -1,6 +1,5 @@
-import { APIGatewayEvent, APIGatewayProxyEventV2 } from "aws-lambda";
+import { APIGatewayEvent } from "aws-lambda";
 import { CategoryRepository } from "../repository/category-repository";
-import jsonBodyParser from "@middy/http-json-body-parser";
 import {
   BadRequest,
   CreatedResponse,
