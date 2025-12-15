@@ -88,9 +88,9 @@ export class CategoryService {
   }
 
   async deleteCategory(event: APIGatewayEvent) {
-    //   const categoryId = event.pathParameters?.id;
-    //   if (!categoryId) return ErrorResponse(403, "Category id is required");
-    //   const data = await this._repository.deleteCategory(categoryId);
-    //   return SuccessResponse(data);
+    const categoryId = event.pathParameters?.id;
+    if (!categoryId) return BadRequest("Category id is required");
+    const data = await this._repository.deleteCategory(categoryId);
+    return SuccessResponse(data);
   }
 }
