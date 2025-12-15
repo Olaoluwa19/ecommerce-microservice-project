@@ -1,6 +1,6 @@
 import { CategoryInput } from "../dto/category-input";
 import { categories, CategoryDoc } from "../models/category-model";
-import { InternalError } from "../utility/response";
+import { InternalError, NotFound } from "../utility/response";
 
 export class CategoryRepository {
   cconstructor() {}
@@ -62,6 +62,21 @@ export class CategoryRepository {
           path: "products",
           model: "products",
         });
+    } catch (error) {
+      return InternalError(error);
+    }
+  }
+
+  async updateCategory({ id, name, displayOrder }: CategoryInput) {
+    try {
+      let category = (await categories.findById(id)) as CategoryDoc;
+      if (!category) {
+        return NotFound("Category not found");
+      }
+      category.name = name || category.name;
+      category.displayOrder = displayOrder || category.displayOrder;
+      await category.save();
+      return category;
     } catch (error) {
       return InternalError(error);
     }
