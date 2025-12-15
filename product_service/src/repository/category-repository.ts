@@ -51,4 +51,19 @@ export class CategoryRepository {
       return InternalError(error);
     }
   }
+
+  async getCategoryById(id: string, offset = 0, perPage?: number) {
+    try {
+      return categories
+        .findById(id, {
+          products: { $slice: [offset, perPage ? perPage : 100] },
+        })
+        .populate({
+          path: "products",
+          model: "products",
+        });
+    } catch (error) {
+      return InternalError(error);
+    }
+  }
 }
