@@ -32,11 +32,11 @@ export class ProductService {
     const errors = await AppValidationError(input);
 
     if (errors && errors.length > 0) {
-      return BadRequest(errors); // ← Now returns full, structured errors!
+      return BadRequest(errors);
     }
 
     const data = await this._repository.createProduct(input);
-    return CreatedResponse(data); // ← 201 + proper body
+    return CreatedResponse(data);
   }
 
   async getProducts(event: APIGatewayEvent) {
