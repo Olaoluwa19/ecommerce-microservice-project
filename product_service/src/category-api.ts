@@ -4,6 +4,7 @@ import { CategoryService } from "./service/category-service";
 import { CategoryRepository } from "./repository/category-repository";
 import { connectDB } from "./utility/mongodb";
 import middy from "@middy/core";
+import jsonBodyParser from "@middy/http-json-body-parser";
 
 const service = new CategoryService(new CategoryRepository());
 
@@ -38,4 +39,4 @@ export const handler = middy(
 
     return service.ResponseWithError(event);
   }
-).use(service.conditionalBodyParser());
+).use(jsonBodyParser());
