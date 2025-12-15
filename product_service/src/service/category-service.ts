@@ -1,7 +1,14 @@
-import { APIGatewayEvent } from "aws-lambda";
+import { APIGatewayEvent, APIGatewayProxyEventV2 } from "aws-lambda";
 import { CategoryRepository } from "../repository/category-repository";
 import jsonBodyParser from "@middy/http-json-body-parser";
-import { ErrorResponse } from "../utility/response";
+import {
+  BadRequest,
+  CreatedResponse,
+  ErrorResponse,
+} from "../utility/response";
+import { CategoryInput } from "../dto/category-input";
+import { plainToClass } from "class-transformer";
+import { AppValidationError } from "../utility/errors";
 
 export class CategoryService {
   _repsitory: CategoryRepository;
@@ -9,36 +16,36 @@ export class CategoryService {
     this._repsitory = repositry;
   }
 
-  conditionalBodyParser = () => ({
-    before: async (handler: any) => {
-      const httpMethod = handler.event.requestContext.http.method.toLowerCase();
-      if (["post", "put"].includes(httpMethod)) {
-        await jsonBodyParser().before(handler);
-      }
-    },
-  });
+  // conditionalBodyParser = () => ({
+  //   before: async (handler: any) => {
+  //     const httpMethod = handler.event.requestContext.http.method.toLowerCase();
+  //     if (["post", "put"].includes(httpMethod)) {
+  //       await jsonBodyParser().before(handler);
+  //     }
+  //   },
+  // });
 
-  async ResponseWithError(event: APIGatewayProxyEventV2) {
+  async ResponseWithError(event: APIGatewayEvent) {
     return ErrorResponse(404, "request Method is not supported!");
   }
 
   async createCategory(event: APIGatewayEvent) {
-    //   if (!event.body) {
-    //     return BadRequest("Request body is required");
-    //   }
-    //   let payload;
-    //   try {
-    //     payload = JSON.parse(event.body);
-    //   } catch (e) {
-    //     return BadRequest("Invalid JSON");
-    //   }
-    //   const input = plainToClass(CategoryInput, payload);
-    //   const errors = await AppValidationError(input);
-    //   if (errors && errors.length > 0) {
-    //     return BadRequest(errors); // ← Now returns full, structured errors!
-    //   }
-    //   const data = await this._repository.createCategory(input);
-    //   return CreatedResponse(data); // ← 201 + proper body
+    if (!event.body) {
+      return BadRequest("Request body is required");
+    }
+    let payload;
+    try {
+      payload = JSON.parse(event.body);
+    } catch (e) {
+      return BadRequest("Invalid JSON");
+    }
+    const input = plainToClass(CategoryInput, payload);
+    const errors = await AppValidationError(input);
+    if (errors && errors.length > 0) {
+      return BadRequest(errors); // ← Now returns full, structured errors!
+    }
+    const data = await this._repository.createCategory(input);
+    return CreatedResponse(data); // ← 201 + proper body
   }
 
   async getCategories(event: APIGatewayEvent) {
