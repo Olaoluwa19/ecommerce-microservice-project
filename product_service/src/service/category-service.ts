@@ -11,9 +11,9 @@ import { plainToClass } from "class-transformer";
 import { AppValidationError } from "../utility/errors";
 
 export class CategoryService {
-  _repsitory: CategoryRepository;
-  constructor(repositry: CategoryRepository) {
-    this._repsitory = repositry;
+  _repository: CategoryRepository;
+  constructor(repository: CategoryRepository) {
+    this._repository = repository;
   }
 
   // conditionalBodyParser = () => ({
