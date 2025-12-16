@@ -11,6 +11,7 @@ import {
 import { plainToClass } from "class-transformer";
 import { AppValidationError } from "../utility/errors";
 import { ProductInput } from "../dto/product-input";
+import { CategoryRepository } from "../repository/category-repository";
 
 export class ProductService {
   _repository: ProductRepository;
@@ -39,7 +40,15 @@ export class ProductService {
     }
 
     const data = await this._repository.createProduct(input);
-    return CreatedResponse(data);
+    if (!data) {
+      return InternalError("Failed to create product");
+    }
+
+    const categoryProduct = await new CategoryRepository().addItem({
+      id: input.category_id,
+      products: [data._id],
+    });
+    return CreatedResponse(categoryProduct);
   }
 
   async getProducts(event: APIGatewayEvent) {
