@@ -34,6 +34,7 @@ export class ProductService {
     const errors = await AppValidationError(input);
 
     if (errors && errors.length > 0) {
+      console.log("Validation errors:", errors);
       return BadRequest(errors);
     }
 
@@ -63,15 +64,18 @@ export class ProductService {
     const productId = event.pathParameters?.id;
     if (!productId) return BadRequest("Product id is required");
     const input = plainToClass(ProductInput, JSON.parse(event.body!));
-    const error = await AppValidationError(input);
-    console.log(error);
-    if (error) return InternalError(error);
+    const errors = await AppValidationError(input);
+
+    if (errors && errors.length > 0) {
+      console.log("Validation errors:", errors);
+      return BadRequest(errors);
+    }
 
     input.id = productId;
 
     const data = await this._repository.updateProduct(input);
 
-    return SuccessResponse(data);
+    return CreatedResponse(data);
   }
 
   async deleteProduct(event: APIGatewayEvent) {
