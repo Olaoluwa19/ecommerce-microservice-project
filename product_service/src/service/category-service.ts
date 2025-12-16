@@ -4,6 +4,7 @@ import {
   BadRequest,
   CreatedResponse,
   ErrorResponse,
+  InternalError,
   NotFound,
   SuccessResponse,
 } from "../utility/response";
@@ -50,11 +51,23 @@ export class CategoryService {
   }
 
   async getCategories(event: APIGatewayEvent) {
-    const data = await this._repository.getAllCategories();
-    if (!data) {
-      return NotFound();
+    try {
+      const type = event.queryStringParameters?.type;
+      if (type === "top") {
+        const data = await this._repository.getTopCategories();
+        if (!data) {
+          return NotFound("Top categories not found");
+        }
+        return SuccessResponse(data);
+      }
+      const data = await this._repository.getAllCategories();
+      if (!data) {
+        return NotFound("ALl categories not found");
+      }
+      return SuccessResponse(data);
+    } catch (error) {
+      return InternalError(error);
     }
-    return SuccessResponse(data);
   }
 
   async getCategory(event: APIGatewayEvent) {
