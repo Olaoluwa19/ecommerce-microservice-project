@@ -1,5 +1,5 @@
 import { AddItemInput, CategoryInput } from "../dto/category-input";
-import { categories, CategoryDoc } from "../models/category-model";
+import { categories, CategoryDoc } from "../models";
 import { InternalError, NotFound } from "../utility/response";
 
 export class CategoryRepository {
@@ -7,15 +7,12 @@ export class CategoryRepository {
 
   async createCategory({ name, parentId }: CategoryInput) {
     try {
-      // create a new category
       const newCategory = await categories.create({
         name,
         parentId,
         subcategory: [],
         products: [],
       });
-      // check parent id exists
-      // update parent category with the new category as child
       if (parentId) {
         const parentCategory = (await categories.findById(
           parentId
@@ -26,7 +23,6 @@ export class CategoryRepository {
         ];
         await parentCategory.save();
       }
-      // return the created category
       return newCategory;
     } catch (error) {
       return InternalError(error);

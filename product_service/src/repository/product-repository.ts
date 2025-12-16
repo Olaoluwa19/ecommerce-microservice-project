@@ -1,5 +1,5 @@
 import { ProductInput } from "../dto/product-input";
-import { ProductDoc, products } from "../models/product-model";
+import { ProductDoc, products } from "../models";
 
 export class ProductRepository {
   constructor() {}
