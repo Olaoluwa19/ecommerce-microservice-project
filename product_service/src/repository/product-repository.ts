@@ -54,6 +54,8 @@ export class ProductRepository {
   }
 
   async deleteProduct(id: string) {
-    return products.deleteOne({ _id: id });
+    const { category_id } = (await products.findById(id)) as ProductDoc;
+    const deleteResult = await products.deleteOne({ _id: id });
+    return { deleteResult, category_id };
   }
 }
