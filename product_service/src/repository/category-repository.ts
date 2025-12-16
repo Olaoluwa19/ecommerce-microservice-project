@@ -52,6 +52,21 @@ export class CategoryRepository {
     }
   }
 
+  async getTopCategories() {
+    try {
+      return categories
+        .find({ parentId: { $ne: null } }, { products: { $slice: 10 } })
+        .populate({
+          path: "products",
+          model: "products",
+        })
+        .sort({ displayOrder: "descending" })
+        .limit(10);
+    } catch (error) {
+      return InternalError(error);
+    }
+  }
+
   async getCategoryById(id: string, offset = 0, perPage?: number) {
     try {
       return categories
