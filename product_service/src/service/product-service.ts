@@ -46,7 +46,7 @@ export class ProductService {
 
     const categoryProduct = await new CategoryRepository().addItem({
       id: input.category_id,
-      products: [data._id],
+      products: [data._id as string],
     });
     return CreatedResponse(categoryProduct);
   }
@@ -90,7 +90,13 @@ export class ProductService {
   async deleteProduct(event: APIGatewayEvent) {
     const productId = event.pathParameters?.id;
     if (!productId) return ErrorResponse(403, "Product id is required");
-    const data = await this._repository.deleteProduct(productId);
-    return SuccessResponse(data);
+    const { deleteResult, category_id } = await this._repository.deleteProduct(
+      productId
+    );
+    await new CategoryRepository().removeItem({
+      id: category_id,
+      products: [productId],
+    });
+    return SuccessResponse(deleteResult);
   }
 }
