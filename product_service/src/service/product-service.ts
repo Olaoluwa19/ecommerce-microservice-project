@@ -4,6 +4,8 @@ import {
   BadRequest,
   CreatedResponse,
   ErrorResponse,
+  InternalError,
+  NotFound,
   SuccessResponse,
 } from "../utility/response";
 import { plainToClass } from "class-transformer";
@@ -41,23 +43,29 @@ export class ProductService {
 
   async getProducts(event: APIGatewayEvent) {
     const data = await this._repository.getAllProducts();
+    if (data.length === 0) {
+      return NotFound("No products found");
+    }
     return SuccessResponse(data);
   }
 
   async getProduct(event: APIGatewayEvent) {
     const productId = event.pathParameters?.id;
-    if (!productId) return ErrorResponse(403, "Product id is required");
+    if (!productId) return BadRequest("Product id is required");
     const data = await this._repository.getProductById(productId);
+    if (data.length === 0) {
+      return NotFound("No products found");
+    }
     return SuccessResponse(data);
   }
 
   async editProduct(event: APIGatewayEvent) {
     const productId = event.pathParameters?.id;
-    if (!productId) return ErrorResponse(403, "Product id is required");
+    if (!productId) return BadRequest("Product id is required");
     const input = plainToClass(ProductInput, JSON.parse(event.body!));
     const error = await AppValidationError(input);
     console.log(error);
-    if (error) return ErrorResponse(404, error);
+    if (error) return InternalError(error);
 
     input.id = productId;
 
