@@ -9,7 +9,7 @@ import jsonBodyParser from "@middy/http-json-body-parser";
 const service = new CategoryService(new CategoryRepository());
 
 export const handler = middy(
-  (
+  async (
     event: APIGatewayEvent,
     context: Context
   ): Promise<APIGatewayProxyResult> => {
