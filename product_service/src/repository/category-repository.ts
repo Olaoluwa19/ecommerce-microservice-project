@@ -75,6 +75,7 @@ export class CategoryRepository {
           model: "products",
         });
     } catch (error) {
+      console.log(error);
       return InternalError(error);
     }
   }
@@ -91,6 +92,7 @@ export class CategoryRepository {
       await category.save();
       return category;
     } catch (error) {
+      console.log(error);
       return InternalError(error);
     }
   }
@@ -99,6 +101,7 @@ export class CategoryRepository {
     try {
       return await categories.deleteOne({ _id: id });
     } catch (error) {
+      console.log(error);
       return InternalError(error);
     }
   }
@@ -113,6 +116,7 @@ export class CategoryRepository {
       await category.save();
       return category;
     } catch (error) {
+      console.log(error);
       return InternalError(error);
     }
   }
@@ -130,6 +134,7 @@ export class CategoryRepository {
       await category.save();
       return category;
     } catch (error) {
+      console.log(error);
       return InternalError(error);
     }
   }
