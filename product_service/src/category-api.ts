@@ -39,4 +39,4 @@ export const handler = middy(
 
     return service.ResponseWithError(event);
   }
-).use(jsonBodyParser());
+).use(service.conditionalBodyParser());
