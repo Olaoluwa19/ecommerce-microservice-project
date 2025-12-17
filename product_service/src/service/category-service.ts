@@ -11,6 +11,7 @@ import {
 import { CategoryInput } from "../dto/category-input";
 import { plainToClass } from "class-transformer";
 import { AppValidationError } from "../utility/errors";
+import jsonBodyParser from "@middy/http-json-body-parser";
 
 export class CategoryService {
   _repository: CategoryRepository;
@@ -18,14 +19,17 @@ export class CategoryService {
     this._repository = repository;
   }
 
-  // conditionalBodyParser = () => ({
-  //   before: async (handler: any) => {
-  //     const httpMethod = handler.event.requestContext.http.method.toLowerCase();
-  //     if (["post", "put"].includes(httpMethod)) {
-  //       await jsonBodyParser().before(handler);
-  //     }
-  //   },
-  // });
+  conditionalBodyParser = () => ({
+    before: async (handler: any) => {
+      const httpMethod = handler.event.requestContext.http.method.toLowerCase();
+      if (["post", "put"].includes(httpMethod)) {
+        const parser = jsonBodyParser();
+        if (parser && parser.before) {
+          await parser.before(handler);
+        }
+      }
+    },
+  });
 
   async ResponseWithError(event: APIGatewayEvent) {
     return ErrorResponse(404, "request Method is not supported!");
