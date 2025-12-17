@@ -5,13 +5,14 @@ import { InternalError, NotFound } from "../utility/response";
 export class CategoryRepository {
   cconstructor() {}
 
-  async createCategory({ name, parentId }: CategoryInput) {
+  async createCategory({ name, parentId, imageUrl }: CategoryInput) {
     try {
       const newCategory = await categories.create({
         name,
         parentId,
         subcategory: [],
         products: [],
+        imageUrl,
       });
       if (parentId) {
         const parentCategory = (await categories.findById(
@@ -78,7 +79,7 @@ export class CategoryRepository {
     }
   }
 
-  async updateCategory({ id, name, displayOrder }: CategoryInput) {
+  async updateCategory({ id, name, displayOrder, imageUrl }: CategoryInput) {
     try {
       let category = (await categories.findById(id)) as CategoryDoc;
       if (!category) {
@@ -86,6 +87,7 @@ export class CategoryRepository {
       }
       category.name = name || category.name;
       category.displayOrder = displayOrder || category.displayOrder;
+      category.imageUrl = imageUrl || category.imageUrl;
       await category.save();
       return category;
     } catch (error) {
