@@ -1,5 +1,4 @@
 import { APIGatewayEvent, APIGatewayProxyResult, Context } from "aws-lambda";
-import { ErrorResponse } from "./utility/response";
 import { CategoryService } from "./service/category-service";
 import { CategoryRepository } from "./repository/category-repository";
 import { connectDB } from "./utility/mongodb";

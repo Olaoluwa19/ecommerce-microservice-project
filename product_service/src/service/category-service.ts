@@ -11,7 +11,6 @@ import {
 import { CategoryInput } from "../dto/category-input";
 import { plainToClass } from "class-transformer";
 import { AppValidationError } from "../utility/errors";
-import jsonBodyParser from "@middy/http-json-body-parser";
 
 export class CategoryService {
   _repository: CategoryRepository;
@@ -27,19 +26,14 @@ export class CategoryService {
     if (!event.body) {
       return BadRequest("Request body is required");
     }
-    // let payload;
-    // try {
-    //   payload = JSON.parse(event.body);
-    // } catch (e) {
-    //   return BadRequest("Invalid JSON");
-    // }
+
     const input = plainToClass(CategoryInput, event.body);
     const errors = await AppValidationError(input);
     if (errors && errors.length > 0) {
-      return BadRequest(errors); // ← Now returns full, structured errors!
+      return BadRequest(errors);
     }
     const data = await this._repository.createCategory(input);
-    return CreatedResponse(data); // ← 201 + proper body
+    return CreatedResponse(data);
   }
 
   async getCategories(event: APIGatewayEvent) {
@@ -75,12 +69,7 @@ export class CategoryService {
   async editCategory(event: APIGatewayEvent) {
     const categoryId = event.pathParameters?.id;
     if (!categoryId) return BadRequest("Category id is required");
-    // let payload;
-    // try {
-    //   payload = JSON.parse(event.body!);
-    // } catch (e) {
-    //   return BadRequest("Invalid JSON");
-    // }
+
     const input = plainToClass(CategoryInput, event.body);
     const errors = await AppValidationError(input);
     if (errors && errors.length > 0) {
