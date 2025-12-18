@@ -19,18 +19,6 @@ export class CategoryService {
     this._repository = repository;
   }
 
-  conditionalBodyParser = () => ({
-    before: async (handler: any) => {
-      const httpMethod = handler.event.requestContext.http.method.toLowerCase();
-      if (["post", "put"].includes(httpMethod)) {
-        const parser = jsonBodyParser();
-        if (parser && parser.before) {
-          await parser.before(handler);
-        }
-      }
-    },
-  });
-
   async ResponseWithError(event: APIGatewayEvent) {
     return ErrorResponse(404, "request Method is not supported!");
   }
@@ -66,7 +54,7 @@ export class CategoryService {
       }
       const data = await this._repository.getAllCategories();
       if (!data) {
-        return NotFound("ALl categories not found");
+        return NotFound("All categories not found");
       }
       return SuccessResponse(data);
     } catch (error) {
