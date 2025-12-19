@@ -1,6 +1,6 @@
 import { AddItemInput, CategoryInput } from "../dto/category-input";
 import { categories, CategoryDoc } from "../models";
-import { InternalError, NotFound } from "../utility/response";
+import { BadRequest, InternalError, NotFound } from "../utility/response";
 
 export class CategoryRepository {
   cconstructor() {}
@@ -82,6 +82,9 @@ export class CategoryRepository {
 
   async updateCategory({ id, name, displayOrder, imageUrl }: CategoryInput) {
     try {
+      if (!id) {
+        return BadRequest("Category ID is required");
+      }
       let category = (await categories.findById(id)) as CategoryDoc;
       if (!category) {
         return NotFound("Category not found");
