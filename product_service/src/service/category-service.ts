@@ -58,8 +58,15 @@ export class CategoryService {
 
   async getCategory(event: APIGatewayEvent) {
     const categoryId = event.pathParameters?.id;
+    const offset = Number(event.queryStringParameters?.offset);
+    const perPage = Number(event.queryStringParameters?.perPage);
+
     if (!categoryId) return BadRequest("Category id is required");
-    const data = await this._repository.getCategoryById(categoryId);
+    const data = await this._repository.getCategoryById(
+      categoryId,
+      offset,
+      perPage
+    );
     if (!data) {
       return NotFound();
     }
