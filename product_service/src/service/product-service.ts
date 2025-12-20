@@ -1,4 +1,4 @@
-import { APIGatewayEvent } from "aws-lambda";
+import { APIGatewayEvent, APIGatewayProxyEvent } from "aws-lambda";
 import { ProductRepository } from "../repository/product-repository";
 import {
   BadRequest,
@@ -12,6 +12,7 @@ import { plainToClass } from "class-transformer";
 import { AppValidationError } from "../utility/errors";
 import { ProductInput } from "../dto/product-input";
 import { CategoryRepository } from "../repository/category-repository";
+import { ServiceInput } from "../dto/service-input";
 
 export class ProductService {
   _repository: ProductRepository;
@@ -114,6 +115,21 @@ export class ProductService {
       return SuccessResponse(deleteResult);
     } catch (error) {
       return InternalError(error);
+    }
+  }
+
+  // TODO: http calls will be converted to RPC and Queue later
+  async handleQueueOperation(event: APIGatewayProxyEvent) {
+    if (!event.body) {
+      return BadRequest("Request body is required");
+    }
+
+    const input = plainToClass(ServiceInput, event.body);
+    const errors = await AppValidationError(input);
+
+    if (errors && errors.length > 0) {
+      console.log("Validation errors:", errors);
+      return BadRequest(errors);
     }
   }
 }
