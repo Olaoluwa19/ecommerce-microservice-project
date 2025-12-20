@@ -19,6 +19,10 @@ export class ProductService {
     this._repository = repository;
   }
 
+  async ResponseWithError(event: APIGatewayEvent) {
+    return ErrorResponse(404, "request Method is not supported!");
+  }
+
   async createProduct(event: APIGatewayEvent) {
     if (!event.body) {
       return BadRequest("Request body is required");
