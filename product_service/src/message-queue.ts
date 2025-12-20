@@ -13,6 +13,8 @@ export const baseHandler = async (
   context: Context
 ): Promise<APIGatewayProxyResult> => {
   await connectDB();
+
+  return service.handleQueueOperation(event);
 };
 
 export const handler = middy(baseHandler)
