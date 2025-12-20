@@ -3,16 +3,20 @@ import { ErrorResponse } from "./utility/response";
 import { ProductService } from "./service/product-service";
 import { ProductRepository } from "./repository/product-repository";
 import { connectDB } from "./utility/mongodb";
+import middy from "@middy/core";
+import httpEventNormalizer from "@middy/http-event-normalizer";
+import jsonBodyParser from "@middy/http-json-body-parser";
 
 const service = new ProductService(new ProductRepository());
 
-export const handler = async (
+export const baseHandler = async (
   event: APIGatewayEvent,
   context: Context
 ): Promise<APIGatewayProxyResult> => {
   await connectDB();
 
-  const isRoot = event.pathParameters === null;
+  const categoryId = event.pathParameters?.id;
+  const isRoot = !categoryId;
 
   switch (event.httpMethod.toLowerCase()) {
     case "post":
@@ -34,3 +38,11 @@ export const handler = async (
 
   return ErrorResponse(404, "requetsted method not allowed");
 };
+
+export const handler = middy(baseHandler)
+  .use(httpEventNormalizer())
+  .use(
+    jsonBodyParser({
+      disableContentTypeError: true, // Allows GET/DELETE with stray Content-Type: application/json
+    })
+  );
