@@ -92,15 +92,25 @@ export class ProductService {
   }
 
   async deleteProduct(event: APIGatewayEvent) {
-    const productId = event.pathParameters?.id;
-    if (!productId) return ErrorResponse(403, "Product id is required");
-    const { deleteResult, category_id } = await this._repository.deleteProduct(
-      productId
-    );
-    await new CategoryRepository().removeItem({
-      id: category_id,
-      products: [productId],
-    });
-    return SuccessResponse(deleteResult);
+    try {
+      const productId = event.pathParameters?.id;
+      if (!productId) return BadRequest("Product id is required");
+
+      const result = await this._repository.deleteProduct(productId);
+      // Check if it's an error response (all error responses have statusCode)
+      if ("statusCode" in result) {
+        return result; // It's BadRequest, NotFound, or InternalError
+      }
+
+      const { deleteResult, category_id } = result;
+
+      await new CategoryRepository().removeItem({
+        id: category_id,
+        products: [productId],
+      });
+      return SuccessResponse(deleteResult);
+    } catch (error) {
+      return InternalError(error);
+    }
   }
 }
