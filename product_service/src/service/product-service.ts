@@ -57,6 +57,9 @@ export class ProductService {
 
   async getProducts(event: APIGatewayEvent) {
     const data = await this._repository.getAllProducts();
+    if ("statusCode" in data) {
+      return data; // It's an error response
+    }
     if (data.length === 0) {
       return NotFound("No products found");
     }
