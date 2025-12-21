@@ -105,9 +105,9 @@ export class ProductService {
       if (!productId) return BadRequest("Product id is required");
 
       const result = await this._repository.deleteProduct(productId);
-      // Check if it's an error response (all error responses have statusCode)
+
       if ("statusCode" in result) {
-        return result; // It's BadRequest, NotFound, or InternalError
+        return result;
       }
 
       const { deleteResult, category_id } = result;
@@ -136,7 +136,17 @@ export class ProductService {
       return BadRequest(errors);
     }
 
-    //get product from prodct repository
-    return SuccessResponse({});
+    console.log("Service Input:", input);
+
+    const data = await this._repository.getProductById(input.productId);
+
+    if ("statusCode" in data) {
+      return data;
+    }
+
+    const { _id, name, price, image_url } = data;
+    console.log("Product Data:", data);
+
+    return SuccessResponse({ product_id: _id, name, price, image_url });
   }
 }
