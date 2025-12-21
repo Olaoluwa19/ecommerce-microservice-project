@@ -12,8 +12,8 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_DB=user_service # This creates the DB on first startup
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql
 volumes:
   postgres_data:
