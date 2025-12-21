@@ -160,7 +160,7 @@ net start | find "postgresql"
 netstat -a -n | find "5432"
 psql -U root -d user_service -h localhost -p 5432
 
-psql -U root -d user_service
+psql -U postgres -d user_service
 DROP TABLE IF EXISTS users CASCADE;
 \d users
 DELETE FROM migrations WHERE name = '/20250929004302-initialize';
