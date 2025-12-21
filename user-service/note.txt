@@ -53,8 +53,12 @@ RESOLVE GIT PROTECTION ERROR
 //EDIT MAKEFILE
 nano Makefile
 
+// INSTALL MIGRATE
+npm install -g db-migrate //RUN IN BASH AS ADMINISTRATOR
+
 //check for existence of makefile
 ls -l Makefile
+make create_migration name=cart_n_cart_items
 
 //TO START UBUNTU
 wsl -d Ubuntu-24.04
