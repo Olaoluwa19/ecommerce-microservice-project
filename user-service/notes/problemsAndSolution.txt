@@ -1,0 +1,26 @@
+[ERROR] AssertionError [ERR_ASSERTION]: ifError got unwanted exception: database "user_service" does not exist
+    at module.exports 
+
+HOW TO FIX:
+1. Fix the Startup Order (Health Checks)
+Even if the database exists, the user-service might fail if it tries to run migrations before PostgreSQL is ready to accept connections. Use a health check to ensure the database is fully "healthy" before the migration runs. 
+docker-compose.yml:
+yaml
+services:
+  db:
+    image: postgres:latest
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d user_service"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+2. Clear old data and stop containers:
+docker-compose down -v
+3. Start only the database:
+docker-compose up -d postgres
+4. Wait 10 seconds (for Postgres to initialize the user_service DB).
+5. Run migrations from your host machine:
+npm run migrate
+6. Start your Serverless app:
+npm run dev
