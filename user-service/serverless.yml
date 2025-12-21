@@ -76,6 +76,3 @@ functions:
 
 plugins:
 - serverless-offline
-- serverless-plugin-typescript
-build:
-  esbuild: false
