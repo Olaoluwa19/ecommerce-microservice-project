@@ -42,7 +42,7 @@ export class ProductRepository {
       if (!id) {
         return BadRequest("Product ID is required");
       }
-      return products.findById(id);
+      return (await products.findById(id)) as ProductDoc;
     } catch (error) {
       return InternalError(error);
     }
