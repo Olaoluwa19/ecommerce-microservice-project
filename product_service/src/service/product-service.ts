@@ -71,7 +71,11 @@ export class ProductService {
     const productId = event.pathParameters?.id;
     if (!productId) return BadRequest("Product id is required");
     const data = await this._repository.getProductById(productId);
-    if (data.length === 0) {
+    if ("statusCode" in data) {
+      return data; // It's an error response
+    }
+
+    if (!data) {
       return NotFound("No products found");
     }
     return SuccessResponse(data);
@@ -131,5 +135,8 @@ export class ProductService {
       console.log("Validation errors:", errors);
       return BadRequest(errors);
     }
+
+    //get product from prodct repository
+    return SuccessResponse({});
   }
 }
