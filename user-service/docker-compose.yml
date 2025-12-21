@@ -1,15 +1,19 @@
 services:
-  postgres:
+  postgres: # Must match your database.json host: "postgres"
     image: postgres:latest
     restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d user_service"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     environment:
       - POSTGRES_PASSWORD=0000
       - POSTGRES_USER=postgres
-      - POSTGRES_DB=user_service
+      - POSTGRES_DB=user_service # This creates the DB on first startup
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql
-
+      - postgres_data:/var/lib/postgresql/data
 volumes:
   postgres_data:
