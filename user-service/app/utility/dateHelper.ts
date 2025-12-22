@@ -5,6 +5,10 @@ export const TimeDifference = (
   toDate: string,
   type: "d" | "h" | "m"
 ) => {
-  const startDate = dayjs(fromDate);
-  return startDate.diff(dayjs(toDate), type, true);
+  try {
+    const startDate = dayjs(fromDate);
+    return startDate.diff(dayjs(toDate), type, true);
+  } catch (error) {
+    throw new Error(error);
+  }
 };
