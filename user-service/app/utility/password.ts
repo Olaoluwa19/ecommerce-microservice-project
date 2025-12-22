@@ -7,11 +7,19 @@ import { UserModel } from "../models/UserModel.js";
 const APP_SECRET = process.env.APP_SECRET;
 
 export const GetSalt = async () => {
-  return await bcrypt.genSalt();
+  try {
+    return await bcrypt.genSalt();
+  } catch (error) {
+    throw new Error(error);
+  }
 };
 
 export const GetHashedPassword = async (password: string, salt: string) => {
-  return await bcrypt.hash(password, salt);
+  try {
+    return await bcrypt.hash(password, salt);
+  } catch (error) {
+    throw new Error(error);
+  }
 };
 
 export const ValidatePassword = async (
@@ -19,22 +27,30 @@ export const ValidatePassword = async (
   savedPassword: string,
   salt: string
 ) => {
-  return (await GetHashedPassword(enteredPassword, salt)) == savedPassword;
+  try {
+    return (await GetHashedPassword(enteredPassword, salt)) == savedPassword;
+  } catch (error) {
+    throw new Error(error);
+  }
 };
 
 export const GetToken = ({ email, user_id, phone, userType }: UserModel) => {
-  return jwt.sign(
-    {
-      user_id,
-      email,
-      phone,
-      userType,
-    },
-    APP_SECRET,
-    {
-      expiresIn: "30d",
-    }
-  );
+  try {
+    return jwt.sign(
+      {
+        user_id,
+        email,
+        phone,
+        userType,
+      },
+      APP_SECRET,
+      {
+        expiresIn: "30d",
+      }
+    );
+  } catch (error) {
+    throw new Error(error);
+  }
 };
 
 export const VerifyToken = async (
@@ -56,21 +72,6 @@ export const VerifyToken = async (
     return payload as UserModel;
   } catch (error) {
     console.error("Token verification error:", error);
-    return false;
+    throw new Error(error);
   }
 };
-
-// export const VerifyToken = async (
-//   token: string
-// ): Promise<UserModel | false> => {
-//   try {
-//     if (token !== "") {
-//       const payload =  jwt.verify(token.split(" ")[1], APP_SECRET);
-//       return payload as UserModel;
-//     }
-//     return false;
-//   } catch (error) {
-//     console.log(error);
-//     return false;
-//   }
-// };
