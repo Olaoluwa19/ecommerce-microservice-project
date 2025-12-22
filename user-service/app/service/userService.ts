@@ -1,7 +1,15 @@
 import * as dotenv from "dotenv";
 dotenv.config(); // Loads .env into process.env
 import bodyParser from "@middy/http-json-body-parser";
-import { ErrorResponse, SuccessResponse } from "../utility/response.js";
+import {
+  BadRequest,
+  CreatedResponse,
+  ErrorResponse,
+  InternalError,
+  NotFound,
+  SuccessResponse,
+  Unauthorized,
+} from "../utility/response.js";
 import { APIGatewayProxyEventV2 } from "aws-lambda";
 import { UserRepository } from "../repository/userRepository.js";
 import { autoInjectable } from "tsyringe";
@@ -146,14 +154,17 @@ export class UserService {
       }
 
       const input = plainToClass(VerificationInput, event.body);
-      const error = await AppValidationError(input);
-      if (error) {
-        return ErrorResponse(400, error);
+      const errors = await AppValidationError(input);
+      if (errors && errors.length > 0) {
+        console.log("Validation errors:", errors);
+        return BadRequest(errors);
       }
 
-      const { verification_code, expiry } = await this.repository.findAccount(
-        payload.email
-      );
+      const result = await this.repository.findAccount(payload.email);
+      if ("statusCode" in result) {
+        return result;
+      }
+      const { verification_code, expiry } = result;
 
       //find user by id and compare code
       if (verification_code === parseInt(input.code)) {
@@ -180,7 +191,7 @@ export class UserService {
       return SuccessResponse({ message: "User verified" });
     } catch (error) {
       console.log(error);
-      return ErrorResponse(500, error);
+      return InternalError(error);
     }
   }
 
@@ -190,27 +201,29 @@ export class UserService {
       const headers = event.headers || {};
       const token = headers.authorization || headers.Authorization;
       console.log("Headers:", event.headers);
-
       if (!token) {
-        return ErrorResponse(401, "Authorization header missing");
+        return Unauthorized("Authorization header missing");
       }
-
       const payload = await VerifyToken(token);
       if (!payload) {
-        return ErrorResponse(403, "Authorization failed");
+        return BadRequest("Authorization failed");
       }
 
       const input = plainToClass(ProfileInput, event.body);
-      const error = await AppValidationError(input);
-      console.log(error);
-      if (error) return ErrorResponse(404, error);
+      const errors = await AppValidationError(input);
+      if (errors && errors.length > 0) {
+        console.log("Validation errors:", errors);
+        return BadRequest(errors);
+      }
 
-      await this.repository.createProfile(payload.user_id, input);
-
-      return SuccessResponse({ message: "profile created!" });
+      const result = await this.repository.createProfile(
+        payload.user_id,
+        input
+      );
+      return result;
     } catch (error) {
       console.log(error);
-      return ErrorResponse(500, error);
+      return InternalError(error);
     }
   }
 
@@ -219,21 +232,19 @@ export class UserService {
       const headers = event.headers || {};
       const token = headers.authorization || headers.Authorization;
       console.log("Headers:", event.headers);
-
       if (!token) {
-        return ErrorResponse(401, "Authorization header missing");
+        return Unauthorized("Authorization header missing");
       }
-
       const payload = await VerifyToken(token);
       if (!payload) {
-        return ErrorResponse(403, "Authorization failed");
+        return BadRequest("Authorization failed");
       }
 
       const result = await this.repository.getUserProfile(payload.user_id);
       return SuccessResponse(result);
     } catch (error) {
       console.log(error);
-      return ErrorResponse(500, error);
+      return InternalError(error);
     }
   }
 
@@ -244,51 +255,24 @@ export class UserService {
       console.log("Headers:", event.headers);
 
       if (!token) {
-        return ErrorResponse(401, "Authorization header missing");
+        return NotFound("Authorization header missing");
       }
 
       const payload = await VerifyToken(token);
-      if (!payload) {
-        return ErrorResponse(403, "Authorization failed");
-      }
+      if (!payload) return BadRequest("Authorization failed");
 
       const input = plainToClass(ProfileInput, event.body);
-      const error = await AppValidationError(input);
-      console.log(error);
-      if (error) return ErrorResponse(404, error);
+      const errors = await AppValidationError(input);
+      if (errors && errors.length > 0) {
+        console.log("Validation errors:", errors);
+        return BadRequest(errors);
+      }
 
-      await this.repository.editProfile(payload.user_id, input);
-
-      return SuccessResponse({ message: "profile updated" });
+      const result = await this.repository.editProfile(payload.user_id, input);
+      return result;
     } catch (error) {
       console.log(error);
-      return ErrorResponse(500, error);
+      return InternalError(error);
     }
-  }
-
-  // Cart Section
-  async CreateCart(event: APIGatewayProxyEventV2) {
-    return SuccessResponse({ message: "response from Create Cart" });
-  }
-
-  async UpdateCart(event: APIGatewayProxyEventV2) {
-    return SuccessResponse({ message: "response from Update Cart" });
-  }
-
-  async GetCart(event: APIGatewayProxyEventV2) {
-    return SuccessResponse({ message: "response from Get Cart" });
-  }
-
-  // Payment Section
-  async CreatePaymentMethod(event: APIGatewayProxyEventV2) {
-    return SuccessResponse({ message: "response from Create Payment Method" });
-  }
-
-  async UpdatePaymentMethod(event: APIGatewayProxyEventV2) {
-    return SuccessResponse({ message: "response from Update Payment Method" });
-  }
-
-  async GetPaymentMethod(event: APIGatewayProxyEventV2) {
-    return SuccessResponse({ message: "response from Get Payment Method" });
   }
 }
