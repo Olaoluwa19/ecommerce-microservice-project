@@ -12,7 +12,7 @@ export class DBOperation {
       await client.end();
       return result;
     } catch (error) {
-      return InternalError(error);
+      throw error;
     }
   }
 }
