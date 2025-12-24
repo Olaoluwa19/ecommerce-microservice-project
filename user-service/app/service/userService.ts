@@ -57,11 +57,15 @@ export class UserService {
   async CreateUser(event: APIGatewayProxyEventV2) {
     try {
       const input = plainToClass(SignupInput, event.body);
-      const error = await AppValidationError(input);
-      console.log(error);
-      if (error) return ErrorResponse(404, error);
-
+      const errors = await AppValidationError(input);
+      if (errors && errors.length > 0) {
+        console.log("Validation errors:", errors);
+        return BadRequest(errors);
+      }
       const salt = await GetSalt();
+      if (!salt) {
+        return BadRequest("Error generating salt for password hashing");
+      }
       const hashedPassword = await GetHashedPassword(input.password, salt);
       const data = await this.repository.createAccount({
         email: input.email,
@@ -70,21 +74,22 @@ export class UserService {
         userType: "BUYER",
         salt: salt,
       });
-      return SuccessResponse(data);
+      return CreatedResponse(data);
     } catch (error) {
-      console.log(error);
-      return ErrorResponse(500, error);
+      return InternalError(error);
     }
   }
 
   async UserLogin(event: APIGatewayProxyEventV2) {
     try {
       const input = plainToClass(LoginInput, event.body);
-      const error = await AppValidationError(input);
-      if (error) return ErrorResponse(404, error);
+      const errors = await AppValidationError(input);
+      if (errors && errors.length > 0) {
+        console.log("Validation errors:", errors);
+        return BadRequest(errors);
+      }
 
       const data = await this.repository.findAccount(input.email);
-
       // check or validate password
       const verified = await ValidatePassword(
         input.password,
@@ -92,14 +97,13 @@ export class UserService {
         data.salt
       );
       if (!verified) {
-        throw new Error("password does not match!");
+        return Unauthorized("password does not match!");
       }
       const token = GetToken(data);
 
       return SuccessResponse({ token });
     } catch (error) {
-      console.log(error);
-      return ErrorResponse(500, error);
+      return InternalError(error);
     }
   }
 
@@ -110,12 +114,11 @@ export class UserService {
       console.log("Headers:", event.headers);
 
       if (!token) {
-        return ErrorResponse(401, "Authorization header missing");
+        return Unauthorized("Authorization header missing");
       }
-
       const payload = await VerifyToken(token);
       if (!payload) {
-        return ErrorResponse(403, "Authorization failed");
+        return BadRequest("Authorization failed");
       }
 
       const { code, expiry } = GenerateAccessCode();
@@ -133,8 +136,7 @@ export class UserService {
         message: "Verification code is sent to your registered phone number.",
       });
     } catch (error) {
-      console.log(error);
-      return ErrorResponse(500, error);
+      return InternalError(error);
     }
   }
 
@@ -145,12 +147,11 @@ export class UserService {
       console.log("Headers:", event.headers);
 
       if (!token) {
-        return ErrorResponse(401, "Authorization header missing");
+        return Unauthorized("Authorization header missing");
       }
-
       const payload = await VerifyToken(token);
       if (!payload) {
-        return ErrorResponse(403, "Authorization failed");
+        return BadRequest("Authorization failed");
       }
 
       const input = plainToClass(VerificationInput, event.body);
@@ -161,9 +162,6 @@ export class UserService {
       }
 
       const result = await this.repository.findAccount(payload.email);
-      if ("statusCode" in result) {
-        return result;
-      }
       const { verification_code, expiry } = result;
 
       //find user by id and compare code
@@ -179,18 +177,14 @@ export class UserService {
           console.log("Verified successfully");
           await this.repository.updateVerifyUser(payload.user_id);
         } else {
-          return ErrorResponse(
-            403,
-            "Code has expired, please request new code"
-          );
+          return Unauthorized("Code has expired, please request new code");
         }
       } else {
-        return ErrorResponse(400, "Invalid verification code");
+        return BadRequest("Invalid verification code");
       }
 
       return SuccessResponse({ message: "User verified" });
     } catch (error) {
-      console.log(error);
       return InternalError(error);
     }
   }
@@ -220,9 +214,8 @@ export class UserService {
         payload.user_id,
         input
       );
-      return result;
+      return CreatedResponse(result);
     } catch (error) {
-      console.log(error);
       return InternalError(error);
     }
   }
@@ -243,7 +236,6 @@ export class UserService {
       const result = await this.repository.getUserProfile(payload.user_id);
       return SuccessResponse(result);
     } catch (error) {
-      console.log(error);
       return InternalError(error);
     }
   }
@@ -269,9 +261,8 @@ export class UserService {
       }
 
       const result = await this.repository.editProfile(payload.user_id, input);
-      return result;
+      return CreatedResponse(result);
     } catch (error) {
-      console.log(error);
       return InternalError(error);
     }
   }
