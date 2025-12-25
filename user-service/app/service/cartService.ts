@@ -1,9 +1,16 @@
 import * as dotenv from "dotenv";
 dotenv.config(); // Loads .env into process.env
 import bodyParser from "@middy/http-json-body-parser";
-import { ErrorResponse, SuccessResponse } from "../utility/response.js";
+import {
+  BadRequest,
+  CreatedResponse,
+  ErrorResponse,
+  InternalError,
+  NotFound,
+  SuccessResponse,
+} from "../utility/response.js";
 import { APIGatewayProxyEventV2 } from "aws-lambda";
-import { CartRepository } from "../repository/cartRepository.js";
+import { ShoppingCartRepository } from "../repository/cartRepository.js";
 import { autoInjectable } from "tsyringe";
 import { plainToClass } from "class-transformer";
 import { SignupInput } from "../models/dto/SignupInput.js";
@@ -22,13 +29,13 @@ import {
   SendVerificationCode,
 } from "../utility/notification.js";
 import { TimeDifference } from "../utility/dateHelper.js";
-import { ProfileInput } from "../models/dto/AddressInput.js";
+import { CartInput } from "../models/dto/CartInput.js";
 
 @autoInjectable()
 export class CartService {
-  repository: CartRepository;
+  repository: ShoppingCartRepository;
 
-  constructor(repository: CartRepository) {
+  constructor(repository: ShoppingCartRepository) {
     this.repository = repository;
   }
 
@@ -47,7 +54,29 @@ export class CartService {
 
   // Cart Section
   async CreateCart(event: APIGatewayProxyEventV2) {
-    return SuccessResponse({ message: "response from Create Cart" });
+    try {
+      const headers = event.headers || {};
+      const token = headers.authorization || headers.Authorization;
+      console.log("Headers:", event.headers);
+
+      if (!token) {
+        return NotFound("Authorization header missing");
+      }
+
+      const payload = await VerifyToken(token);
+      if (!payload) return BadRequest("Authorization failed");
+
+      const input = plainToClass(CartInput, event.body);
+      const errors = await AppValidationError(input);
+      if (errors && errors.length > 0) {
+        console.log("Validation errors:", errors);
+        return BadRequest(errors);
+      }
+
+      return CreatedResponse({ message: "response from Create Cart" });
+    } catch (error) {
+      return InternalError(error);
+    }
   }
 
   async UpdateCart(event: APIGatewayProxyEventV2) {
