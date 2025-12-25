@@ -4,28 +4,28 @@ import {
   InternalError,
 } from "app/utility/response.js";
 import { AddressModel } from "../models/AddressModel.js";
-import { CartModel } from "../models/CartModel.js";
+import { ShoppingCart } from "../models/ShoppingCartModel.js";
 import { CartInput } from "../models/dto/CartInput.js";
 const { DBOperation } = await import("./dbOperation.js");
 
-export class CartRepository extends DBOperation {
+export class ShoppingCartRepository extends DBOperation {
   constructor() {
     super();
   }
 
-  async findCart(userId: number) {}
+  async findShoppingCart(userId: number) {}
 
-  async createCart(userId: number) {}
+  async createShoppingCart(userId: number) {}
 
-  async findCartItemById(cartId: number) {}
+  async findShoppingCartItemById(ShoppingcartId: number) {}
 
-  async findCartItemByProductId(productId: number) {}
+  async findShoppingCartItemByProductId(productId: number) {}
 
-  async findCartItems(userId: number) {}
+  async findShoppingCartItems(userId: number) {}
 
-  async updateCartItemById(itemId: number, qty: number) {}
+  async updateShoppingCartItemById(itemId: number, qty: number) {}
 
-  async updateCartItemByProductId(productId: string, qty: number) {}
+  async updateShoppingCartItemByProductId(productId: string, qty: number) {}
 
-  async deleteCartItem(id: number) {}
+  async deleteShoppingCartItem(id: number) {}
 }
