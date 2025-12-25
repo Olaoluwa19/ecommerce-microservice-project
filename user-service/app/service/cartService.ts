@@ -73,6 +73,14 @@ export class CartService {
         return BadRequest(errors);
       }
 
+      // Check if cart already exists for the user
+      let currentCart = await this.repository.findShoppingCart(payload.user_id);
+      if (!currentCart) {
+        currentCart = await this.repository.createShoppingCart(payload.user_id);
+      }
+
+      //check of item exist in cart and update quantity
+
       return CreatedResponse({ message: "response from Create Cart" });
     } catch (error) {
       return InternalError(error);

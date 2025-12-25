@@ -19,9 +19,7 @@ export class ShoppingCartRepository extends DBOperation {
       "SELECT cart_id, user_id FROM shopping_carts WHERE user_id=$1";
     const values = [userId];
     const result = await this.executeQuery(queryString, values);
-    return result.rows.length > 0
-      ? (result.rows[0] as ShoppingCartModel)
-      : null;
+    return result.rowCount > 0 ? (result.rows[0] as ShoppingCartModel) : null;
   }
 
   async createCart(userId: number) {
@@ -29,9 +27,7 @@ export class ShoppingCartRepository extends DBOperation {
       "INSERT INTO shopping_carts (user_id) VALUES ($1) RETURNING *";
     const values = [userId];
     const result = await this.executeQuery(queryString, values);
-    return result.rows.length > 0
-      ? (result.rows[0] as ShoppingCartModel)
-      : null;
+    return result.rowCount > 0 ? (result.rows[0] as ShoppingCartModel) : null;
   }
 
   async findCartItemById(cartId: number) {}
@@ -41,7 +37,7 @@ export class ShoppingCartRepository extends DBOperation {
       "SELECT product_id, price, item_qty FROM cart_items WHERE product_id=$1";
     const values = [productId];
     const result = await this.executeQuery(queryString, values);
-    return result.rows.length > 0 ? (result.rows[0] as CartItemModel) : null;
+    return result.rowCount > 0 ? (result.rows[0] as CartItemModel) : null;
   }
 
   async findCartItems(userId: number) {}
@@ -58,12 +54,18 @@ export class ShoppingCartRepository extends DBOperation {
       "INSERT INTO cart_items(cart_id,product_id,name,image_url,price,item_qty) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *";
     const values = [cart_id, product_id, name, image_url, price, item_qty];
     const result = await this.executeQuery(queryString, values);
-    return result.rows.length > 0 ? (result.rows[0] as CartItemModel) : null;
+    return result.rowCount > 0 ? (result.rows[0] as CartItemModel) : null;
   }
 
   async updateCartItemById(itemId: number, qty: number) {}
 
-  async updateCartItemByProductId(productId: string, qty: number) {}
+  async updateCartItemByProductId(productId: string, qty: number) {
+    const queryString =
+      "UPDATE cart_items SET item_qty=$1 WHERE product_id=$2 RETURNING *";
+    const values = [qty, productId];
+    const result = await this.executeQuery(queryString, values);
+    return result.rowCount > 0 ? (result.rows[0] as CartItemModel) : null;
+  }
 
   async deleteCartItem(id: number) {}
 }
