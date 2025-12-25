@@ -3,7 +3,7 @@ dotenv.config(); // Loads .env into process.env
 import bodyParser from "@middy/http-json-body-parser";
 import { ErrorResponse, SuccessResponse } from "../utility/response.js";
 import { APIGatewayProxyEventV2 } from "aws-lambda";
-import { UserRepository } from "../repository/userRepository.js";
+import { CartRepository } from "../repository/cartRepository.js";
 import { autoInjectable } from "tsyringe";
 import { plainToClass } from "class-transformer";
 import { SignupInput } from "../models/dto/SignupInput.js";
@@ -25,10 +25,10 @@ import { TimeDifference } from "../utility/dateHelper.js";
 import { ProfileInput } from "../models/dto/AddressInput.js";
 
 @autoInjectable()
-export class UserService {
-  repository: UserRepository;
+export class CartService {
+  repository: CartRepository;
 
-  constructor(repository: UserRepository) {
+  constructor(repository: CartRepository) {
     this.repository = repository;
   }
 
@@ -45,7 +45,6 @@ export class UserService {
     return ErrorResponse(404, "request Method is not supported!");
   }
 
-
   // Cart Section
   async CreateCart(event: APIGatewayProxyEventV2) {
     return SuccessResponse({ message: "response from Create Cart" });
@@ -59,16 +58,7 @@ export class UserService {
     return SuccessResponse({ message: "response from Get Cart" });
   }
 
-  // Payment Section
-  async CreatePaymentMethod(event: APIGatewayProxyEventV2) {
-    return SuccessResponse({ message: "response from Create Payment Method" });
-  }
-
-  async UpdatePaymentMethod(event: APIGatewayProxyEventV2) {
-    return SuccessResponse({ message: "response from Update Payment Method" });
-  }
-
-  async GetPaymentMethod(event: APIGatewayProxyEventV2) {
-    return SuccessResponse({ message: "response from Get Payment Method" });
+  async DeleteCart(event: APIGatewayProxyEventV2) {
+    return SuccessResponse({ message: "response from Get Cart" });
   }
 }
