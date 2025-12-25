@@ -1,10 +1,14 @@
 import { container } from "tsyringe";
 import { APIGatewayProxyEventV2 } from "aws-lambda";
-import { UserService } from "../service/userService.js";
 import middy from "@middy/core";
 import bodyParser from "@middy/http-json-body-parser";
+import { UserService } from "../service/userService.js";
+import { CartService } from "../service/cartService.js";
+import { PaymentService } from "app/service/paymentService.js";
 
 const service = container.resolve(UserService);
+const cartService = container.resolve(CartService);
+const paymentService = container.resolve(PaymentService);
 
 export const Signup = middy((event: APIGatewayProxyEventV2) => {
   return service.CreateUser(event);
@@ -41,25 +45,27 @@ export const Profile = middy((event: APIGatewayProxyEventV2) => {
 export const Cart = middy((event: APIGatewayProxyEventV2) => {
   const httpMethod = event.requestContext.http.method.toLowerCase();
   if (httpMethod === "post") {
-    return service.CreateCart(event);
+    return cartService.CreateCart(event);
   } else if (httpMethod === "put") {
-    return service.UpdateCart(event);
+    return cartService.UpdateCart(event);
   } else if (httpMethod === "get") {
-    return service.GetCart(event);
+    return cartService.GetCart(event);
+  } else if (httpMethod === "delete") {
+    return cartService.DeleteCart(event);
   } else {
-    return service.ResponseWithError(event);
+    return cartService.ResponseWithError(event);
   }
 }).use(service.conditionalBodyParser());
 
 export const Payment = middy((event: APIGatewayProxyEventV2) => {
   const httpMethod = event.requestContext.http.method.toLowerCase();
   if (httpMethod === "post") {
-    return service.CreatePaymentMethod(event);
+    return paymentService.CreatePaymentMethod(event);
   } else if (httpMethod === "put") {
-    return service.UpdatePaymentMethod(event);
+    return paymentService.UpdatePaymentMethod(event);
   } else if (httpMethod === "get") {
-    return service.GetPaymentMethod(event);
+    return paymentService.GetPaymentMethod(event);
   } else {
-    return service.ResponseWithError(event);
+    return paymentService.ResponseWithError(event);
   }
 }).use(service.conditionalBodyParser());
