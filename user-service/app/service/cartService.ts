@@ -1,5 +1,3 @@
-import * as dotenv from "dotenv";
-dotenv.config(); // Loads .env into process.env
 import bodyParser from "@middy/http-json-body-parser";
 import {
   BadRequest,
