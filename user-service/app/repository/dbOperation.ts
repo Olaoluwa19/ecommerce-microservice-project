@@ -1,4 +1,3 @@
-import { InternalError } from "app/utility/response.js";
 import { DBClient } from "../utility/databaseClient.js";
 
 export class DBOperation {
