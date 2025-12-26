@@ -13,24 +13,11 @@ import { APIGatewayProxyEventV2 } from "aws-lambda";
 import { ShoppingCartRepository } from "../repository/cartRepository.js";
 import { autoInjectable } from "tsyringe";
 import { plainToClass } from "class-transformer";
-import { SignupInput } from "../models/dto/SignupInput.js";
 import { AppValidationError } from "../utility/errors.js";
-import {
-  GetSalt,
-  GetHashedPassword,
-  ValidatePassword,
-  GetToken,
-  VerifyToken,
-} from "../utility/password.js";
-import { LoginInput } from "../models/dto/LoginInput.js";
-import { VerificationInput } from "../models/dto/UpdateInput.js";
-import {
-  GenerateAccessCode,
-  SendVerificationCode,
-} from "../utility/notification.js";
-import { TimeDifference } from "../utility/dateHelper.js";
+import { VerifyToken } from "../utility/password.js";
 import { CartInput } from "../models/dto/CartInput.js";
 import { CartItemModel } from "app/models/CartItemsModel.js";
+import { PullData } from "app/message-queue/index.js";
 
 @autoInjectable()
 export class CartService {
@@ -91,10 +78,24 @@ export class CartService {
           (currentProduct.item_qty += input.qty)
         );
       } else {
-        let cartItem: CartItemModel;
-        cartItem.cart_id = currentCart.cart_id;
-        cartItem.item_qty = input.qty;
-        await this.repository.createCartItem(cartItem);
+        // if does not call product service to get information
+        const { data, status } = await PullData({
+          action: "PULL_PRODUCT_DATA",
+          productId: input.productId,
+        });
+        console.log("Getting Product", data);
+        if (status !== 200) {
+          return BadRequest("Failed to add to cart, product not found");
+        }
+
+        let cartItem = data.data as CartItemModel;
+        if (currentCart) {
+          cartItem.cart_id = currentCart.cart_id;
+          cartItem.item_qty = input.qty;
+          await this.repository.createCartItem(cartItem);
+        } else {
+          return BadRequest("Failed to add to cart, product not found");
+        }
       }
 
       return CreatedResponse({ message: "response from Create Cart" });
