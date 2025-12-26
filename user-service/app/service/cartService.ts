@@ -46,11 +46,9 @@ export class CartService {
       const headers = event.headers || {};
       const token = headers.authorization || headers.Authorization;
       console.log("Headers:", event.headers);
-
       if (!token) {
         return NotFound("Authorization header missing");
       }
-
       const payload = await VerifyToken(token);
       if (!payload) return BadRequest("Authorization failed");
 
@@ -66,7 +64,9 @@ export class CartService {
       if (!currentCart) {
         currentCart = await this.repository.createCart(payload.user_id);
       }
-
+      if (!currentCart) {
+        return BadRequest("Failed to create or retrieve shopping cart");
+      }
       //check of item exist in cart and update quantity
       let currentProduct = await this.repository.findCartItemByProductId(
         input.productId
@@ -78,27 +78,28 @@ export class CartService {
           (currentProduct.item_qty += input.qty)
         );
       } else {
-        // if does not call product service to get information
+        // if does not, call product service to get information
         const { data, status } = await PullData({
           action: "PULL_PRODUCT_DATA",
           productId: input.productId,
         });
         console.log("Getting Product", data);
         if (status !== 200) {
-          return BadRequest("Failed to add to cart, product not found");
+          return BadRequest("Failed to retrieve product information");
         }
 
         let cartItem = data.data as CartItemModel;
-        if (currentCart) {
-          cartItem.cart_id = currentCart.cart_id;
-          cartItem.item_qty = input.qty;
-          await this.repository.createCartItem(cartItem);
-        } else {
-          return BadRequest("Failed to add to cart, product not found");
-        }
+        cartItem.cart_id = currentCart.cart_id;
+        cartItem.item_qty = input.qty;
+        await this.repository.createCartItem(cartItem);
       }
 
-      return CreatedResponse({ message: "response from Create Cart" });
+      // Finally, return the created cart
+      const cartItems = await this.repository.findCartItemsByCartId(
+        currentCart.cart_id
+      );
+
+      return CreatedResponse(cartItems);
     } catch (error) {
       return InternalError(error);
     }
