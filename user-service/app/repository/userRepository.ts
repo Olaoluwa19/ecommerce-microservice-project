@@ -1,8 +1,3 @@
-import {
-  BadRequest,
-  CreatedResponse,
-  InternalError,
-} from "app/utility/response.js";
 import { AddressModel } from "../models/AddressModel.js";
 import { UserModel } from "../models/UserModel.js";
 import { ProfileInput } from "../models/dto/AddressInput.js";
@@ -41,7 +36,7 @@ export class UserRepository extends DBOperation {
   async updateVerificationCode(userId: number, code: number, expiry: Date) {
     const queryString =
       "UPDATE users SET verification_code=$1, expiry=$2 WHERE user_id=$3 AND verified=FALSE RETURNING *"; //user_id, email, phone, user_type
-    if (!queryString) return BadRequest("Invalid query string");
+    if (!queryString) throw new Error("Invalid query string");
     const values = [code, expiry, userId];
 
     const result = await this.executeQuery(queryString, values);
