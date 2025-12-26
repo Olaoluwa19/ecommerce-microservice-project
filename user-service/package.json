@@ -30,6 +30,7 @@
     "class-validator": "^0.14.2",
     "dayjs": "^1.11.18",
     "db-migrate-pg": "^1.5.2",
+    "dotenv": "^16.6.1",
     "jsonwebtoken": "^9.0.2",
     "pg": "^8.16.3",
     "reflect-metadata": "^0.2.2",
@@ -44,7 +45,7 @@
     "@types/dotenv": "^6.1.1",
     "@types/jsonwebtoken": "^9.0.9",
     "@types/pg": "^8.15.5",
-    "dotenv": "^17.2.2",
+    "serverless": "^4.29.0",
     "serverless-offline": "^14.4.0",
     "serverless-plugin-typescript-express": "^1.0.8"
   }
