@@ -165,3 +165,7 @@ DROP TABLE IF EXISTS users CASCADE;
 \d users
 DELETE FROM migrations WHERE name = '/20250929004302-initialize';
 \q
+
+rm -rf node_modules
+npm cache clean --force
+npm install

@@ -1,4 +1,3 @@
 import "reflect-metadata";
-import * as dotenv from "dotenv";
-dotenv.config(); // Loads .env into process.env
+import "dotenv/config"; // ← this is the modern way
 export * from "./handlers/userHandler.js";
