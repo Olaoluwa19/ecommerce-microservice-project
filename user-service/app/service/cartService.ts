@@ -30,6 +30,7 @@ import {
 } from "../utility/notification.js";
 import { TimeDifference } from "../utility/dateHelper.js";
 import { CartInput } from "../models/dto/CartInput.js";
+import { CartItemModel } from "app/models/CartItemsModel.js";
 
 @autoInjectable()
 export class CartService {
@@ -74,12 +75,27 @@ export class CartService {
       }
 
       // Check if cart already exists for the user
-      let currentCart = await this.repository.findShoppingCart(payload.user_id);
+      let currentCart = await this.repository.findCart(payload.user_id);
       if (!currentCart) {
-        currentCart = await this.repository.createShoppingCart(payload.user_id);
+        currentCart = await this.repository.createCart(payload.user_id);
       }
 
       //check of item exist in cart and update quantity
+      let currentProduct = await this.repository.findCartItemByProductId(
+        input.productId
+      );
+      if (currentProduct) {
+        //if exist update quantity
+        await this.repository.updateCartItemByProductId(
+          input.productId,
+          (currentProduct.item_qty += input.qty)
+        );
+      } else {
+        let cartItem: CartItemModel;
+        cartItem.cart_id = currentCart.cart_id;
+        cartItem.item_qty = input.qty;
+        await this.repository.createCartItem(cartItem);
+      }
 
       return CreatedResponse({ message: "response from Create Cart" });
     } catch (error) {
