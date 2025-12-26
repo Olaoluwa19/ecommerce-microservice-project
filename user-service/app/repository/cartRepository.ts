@@ -1,11 +1,4 @@
-import {
-  BadRequest,
-  CreatedResponse,
-  InternalError,
-} from "app/utility/response.js";
-import { AddressModel } from "../models/AddressModel.js";
 import { ShoppingCartModel } from "../models/ShoppingCartModel.js";
-import { CartInput } from "../models/dto/CartInput.js";
 import { CartItemModel } from "app/models/CartItemsModel.js";
 const { DBOperation } = await import("./dbOperation.js");
 
