@@ -5,7 +5,7 @@
   "description": "A Node.js project.",
   "main": "src/index.ts",
   "scripts": {
-    "clean": "rm -rf .build",
+    "clean": "rm -rf .serverless",
     "dev": "serverless offline",
     "build": "npm run clean && npm run dev",
     "deploy": "sls deploy --verbose",
