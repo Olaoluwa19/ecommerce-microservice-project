@@ -13,7 +13,7 @@ provider:
 custom:
   serverless-offline:
     httpPort: 3001
-    lambdaTimeout: 10000 # 10 seconds in milliseconds
+    lambdaTimeout: 15000 # 15 seconds in milliseconds
 
 functions:
   signup:
@@ -51,16 +51,20 @@ functions:
         method: get
   cart:
     handler: app/handler.Cart
+    timeout: 15
     events:
     - httpApi:
         path: /cart
         method: post
     - httpApi:
-        path: /cart
+        path: /cart/{id}
         method: put
     - httpApi:
         path: /cart
         method: get
+    - httpApi:
+        path: /cart/{id}
+        method: delete
   payment:
     handler: app/handler.Payment
     events:
