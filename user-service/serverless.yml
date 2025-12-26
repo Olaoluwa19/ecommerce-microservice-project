@@ -2,81 +2,82 @@
 service: user-service
 
 provider:
-  name: aws
-  runtime: nodejs20.x
-  versionFunctions: false
-  stage: dev
-  region: eu-north-1
-  httpApi:
-    cors: true
+    name: aws
+    runtime: nodejs20.x
+    versionFunctions: false
+    stage: dev
+    region: eu-north-1
+    httpApi:
+        cors: true
 
 custom:
-  serverless-offline:
-    httpPort: 3001
-    lambdaTimeout: 15000 # 15 seconds in milliseconds
+    stage: "dev"
+    serverless-offline:
+        httpPort: 3001
+        lambdaTimeout: 15000 # 15 seconds in milliseconds
 
 functions:
-  signup:
-    handler: app/handler.Signup
-    events:
-    - httpApi:
-        path: /signup
-        method: post
-  login:
-    handler: app/handler.Login
-    events:
-    - httpApi:
-        path: /login
-        method: post
-  verify:
-    handler: app/handler.Verify
-    events:
-    - httpApi:
-        path: /verify
-        method: get
-    - httpApi:
-        path: /verify
-        method: post
-  profile:
-    handler: app/handler.Profile
-    events:
-    - httpApi:
-        path: /user
-        method: post
-    - httpApi:
-        path: /user
-        method: put
-    - httpApi:
-        path: /user
-        method: get
-  cart:
-    handler: app/handler.Cart
-    timeout: 15
-    events:
-    - httpApi:
-        path: /cart
-        method: post
-    - httpApi:
-        path: /cart/{id}
-        method: put
-    - httpApi:
-        path: /cart
-        method: get
-    - httpApi:
-        path: /cart/{id}
-        method: delete
-  payment:
-    handler: app/handler.Payment
-    events:
-    - httpApi:
-        path: /payment
-        method: post
-    - httpApi:
-        path: /payment
-        method: put
-    - httpApi:
-        path: /payment
-        method: get
+    signup:
+        handler: app/handler.Signup
+        events:
+          - httpApi:
+                path: /signup
+                method: post
+    login:
+        handler: app/handler.Login
+        events:
+          - httpApi:
+                path: /login
+                method: post
+    verify:
+        handler: app/handler.Verify
+        events:
+          - httpApi:
+                path: /verify
+                method: get
+          - httpApi:
+                path: /verify
+                method: post
+    profile:
+        handler: app/handler.Profile
+        events:
+          - httpApi:
+                path: /user
+                method: post
+          - httpApi:
+                path: /user
+                method: put
+          - httpApi:
+                path: /user
+                method: get
+    cart:
+        handler: app/handler.Cart
+        timeout: 15
+        events:
+          - httpApi:
+                path: /cart
+                method: post
+          - httpApi:
+                path: /cart/{id}
+                method: put
+          - httpApi:
+                path: /cart
+                method: get
+          - httpApi:
+                path: /cart/{id}
+                method: delete
+    payment:
+        handler: app/handler.Payment
+        events:
+          - httpApi:
+                path: /payment
+                method: post
+          - httpApi:
+                path: /payment
+                method: put
+          - httpApi:
+                path: /payment
+                method: get
 
 plugins:
-- serverless-offline
+  - serverless-offline
