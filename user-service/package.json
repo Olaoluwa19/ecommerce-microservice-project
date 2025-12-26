@@ -21,16 +21,13 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@middy/core": "^6.3.0",
-    "@middy/http-json-body-parser": "^6.3.0",
     "aws-lambda": "^1.0.7",
     "axios": "^1.13.2",
-    "bcrypt": "^6.0.0",
+    "bcryptjs": "^3.0.3",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.2",
     "dayjs": "^1.11.18",
     "db-migrate-pg": "^1.5.2",
-    "dotenv": "^16.6.1",
     "jsonwebtoken": "^9.0.2",
     "pg": "^8.16.3",
     "reflect-metadata": "^0.2.2",
@@ -40,13 +37,14 @@
     "typescript": "^5.8.3"
   },
   "devDependencies": {
+    "@middy/core": "^6.4.5",
+    "@middy/http-json-body-parser": "^6.4.5",
     "@types/aws-lambda": "^8.10.149",
-    "@types/bcrypt": "^5.0.2",
-    "@types/dotenv": "^6.1.1",
+    "@types/bcryptjs": "^2.4.6",
     "@types/jsonwebtoken": "^9.0.9",
     "@types/pg": "^8.15.5",
     "serverless": "^4.29.0",
-    "serverless-offline": "^14.4.0",
-    "serverless-plugin-typescript-express": "^1.0.8"
+    "serverless-esbuild": "^1.57.0",
+    "serverless-offline": "^14.4.0"
   }
 }
