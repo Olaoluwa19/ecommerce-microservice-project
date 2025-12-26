@@ -32,7 +32,7 @@ export class ShoppingCartRepository extends DBOperation {
 
   async findCartItemById(cartId: number) {}
 
-  async findCartItemByProductId(productId: number) {
+  async findCartItemByProductId(productId: string) {
     const queryString =
       "SELECT product_id, price, item_qty FROM cart_items WHERE product_id=$1";
     const values = [productId];
