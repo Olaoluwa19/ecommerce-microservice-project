@@ -42,6 +42,14 @@ export class ShoppingCartRepository extends DBOperation {
 
   async findCartItems(userId: number) {}
 
+  async findCartItemsByCartId(cartId: number) {
+    const queryString =
+      "SELECT product_id, name, image_url, price, item_qty FROM cart_items WHERE cart_id=$1";
+    const values = [cartId];
+    const result = await this.executeQuery(queryString, values);
+    return result.rowCount > 0 ? (result.rows as CartItemModel[]) : [];
+  }
+
   async createCartItem({
     cart_id,
     product_id,
