@@ -169,3 +169,11 @@ DELETE FROM migrations WHERE name = '/20250929004302-initialize';
 rm -rf node_modules
 npm cache clean --force
 npm install
+
+npm uninstall serverless-plugin-typescript-express
+npm install --save-dev serverless-esbuild
+npm --save-dev @types/dotenv @middy/http-json-body-parser @middy/core
+
+TO GENERATE RANDOM SECRETE KEY:
+openssl rand -hex 32
+openssl rand -base64 48
