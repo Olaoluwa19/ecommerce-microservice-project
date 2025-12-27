@@ -5,8 +5,10 @@ import bodyParser from "@middy/http-json-body-parser";
 import { UserService } from "../service/userService.js";
 import { CartService } from "../service/cartService.js";
 import { PaymentService } from "app/service/paymentService.js";
+import { UserRepository } from "app/repository/userRepository.js";
 
-const service = container.resolve(UserService);
+const repository = new UserRepository();
+const service = new UserService(repository);
 const cartService = container.resolve(CartService);
 const paymentService = container.resolve(PaymentService);
 
