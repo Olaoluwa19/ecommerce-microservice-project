@@ -9,28 +9,28 @@ import {
   Unauthorized,
 } from "../utility/response.js";
 import { APIGatewayProxyEventV2 } from "aws-lambda";
-import { UserRepository } from "../repository/userRepository.js";
-import { autoInjectable } from "tsyringe";
+import { UserRepository } from "../repository/userRepository";
+// import { autoInjectable } from "tsyringe";
 import { plainToClass } from "class-transformer";
-import { SignupInput } from "../models/dto/SignupInput.js";
-import { AppValidationError } from "../utility/errors.js";
+import { SignupInput } from "../models/dto/SignupInput";
+import { AppValidationError } from "../utility/errors";
 import {
   GetSalt,
   GetHashedPassword,
   ValidatePassword,
   GetToken,
   VerifyToken,
-} from "../utility/password.js";
-import { LoginInput } from "../models/dto/LoginInput.js";
-import { VerificationInput } from "../models/dto/UpdateInput.js";
+} from "../utility/password";
+import { LoginInput } from "../models/dto/LoginInput";
+import { VerificationInput } from "../models/dto/UpdateInput";
 import {
   GenerateAccessCode,
   SendVerificationCode,
-} from "../utility/notification.js";
-import { TimeDifference } from "../utility/dateHelper.js";
-import { ProfileInput } from "../models/dto/AddressInput.js";
+} from "../utility/notification";
+import { TimeDifference } from "../utility/dateHelper";
+import { ProfileInput } from "../models/dto/AddressInput";
 
-@autoInjectable()
+// @autoInjectable()
 export class UserService {
   repository: UserRepository;
 
