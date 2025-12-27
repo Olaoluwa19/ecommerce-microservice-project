@@ -10,7 +10,6 @@ import {
 } from "../utility/response.js";
 import { APIGatewayProxyEventV2 } from "aws-lambda";
 import { UserRepository } from "../repository/userRepository";
-// import { autoInjectable } from "tsyringe";
 import { plainToClass } from "class-transformer";
 import { SignupInput } from "../models/dto/SignupInput";
 import { AppValidationError } from "../utility/errors";
@@ -30,7 +29,6 @@ import {
 import { TimeDifference } from "../utility/dateHelper";
 import { ProfileInput } from "../models/dto/AddressInput";
 
-// @autoInjectable()
 export class UserService {
   repository: UserRepository;
 
