@@ -1,7 +1,7 @@
-import { AddressModel } from "../models/AddressModel.js";
-import { UserModel } from "../models/UserModel.js";
-import { ProfileInput } from "../models/dto/AddressInput.js";
-const { DBOperation } = await import("./dbOperation.js");
+import { AddressModel } from "../models/AddressModel";
+import { UserModel } from "../models/UserModel";
+import { ProfileInput } from "../models/dto/AddressInput";
+import { DBOperation } from "./dbOperation";
 
 export class UserRepository extends DBOperation {
   constructor() {
