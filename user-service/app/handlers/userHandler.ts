@@ -1,4 +1,3 @@
-import { container } from "tsyringe";
 import { APIGatewayProxyEventV2 } from "aws-lambda";
 import middy from "@middy/core";
 import bodyParser from "@middy/http-json-body-parser";
@@ -6,11 +5,15 @@ import { UserService } from "../service/userService.js";
 import { CartService } from "../service/cartService.js";
 import { PaymentService } from "app/service/paymentService.js";
 import { UserRepository } from "app/repository/userRepository.js";
+import { ShoppingCartRepository } from "app/repository/cartRepository.js";
+import { PaymentRepository } from "app/repository/paymentRepository.js";
 
-const repository = new UserRepository();
-const service = new UserService(repository);
-const cartService = container.resolve(CartService);
-const paymentService = container.resolve(PaymentService);
+const userRepository = new UserRepository();
+const service = new UserService(userRepository);
+const cartRepository = new ShoppingCartRepository();
+const cartService = new CartService(cartRepository);
+const paymentRepository = new PaymentRepository();
+const paymentService = new PaymentService(paymentRepository);
 
 export const Signup = middy((event: APIGatewayProxyEventV2) => {
   return service.CreateUser(event);
