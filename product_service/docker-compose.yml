@@ -1,0 +1,31 @@
+services:
+  db:
+    image: mongo:latest
+    container_name: product_service_mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    environment:
+      MONGO_INITDB_DATABASE: ${database_name} # ← Fixed: no "env:"
+
+  app:
+    build: .
+    container_name: product_service_app
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    environment:
+      MONGODB_URI: ${MONGODB_URI} # ← Fixed: correct syntax
+      NODE_ENV: development
+      AWS_REGION: us-east-1
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/cdk.out
+
+volumes:
+  mongo-data:
