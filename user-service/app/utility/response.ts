@@ -56,10 +56,17 @@ export const ErrorResponse = (statusCode: number, error: unknown) => {
 };
 
 // Convenience wrappers
-export const BadRequest = (error: unknown) => ErrorResponse(400, error);
+export const BadRequest = (error: unknown) => {
+  console.log(error);
+  return ErrorResponse(400, error);
+};
 export const NotFound = (message = "Resource not found") =>
   ErrorResponse(404, message);
-export const Unauthorized = (message = "Unauthorized") =>
-  ErrorResponse(401, message);
-export const InternalError = (error?: unknown) =>
-  ErrorResponse(500, error || "Internal server error");
+export const Unauthorized = (message = "Unauthorized") => {
+  console.log(message);
+  return ErrorResponse(401, message);
+};
+export const InternalError = (error?: unknown) => {
+  console.log(error);
+  return ErrorResponse(500, error || "Internal server error");
+};
