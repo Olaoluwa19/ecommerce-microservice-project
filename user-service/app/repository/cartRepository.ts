@@ -1,6 +1,7 @@
 import { ShoppingCartModel } from "../models/ShoppingCartModel.js";
 import { CartItemModel } from "app/models/CartItemsModel.js";
-const { DBOperation } = await import("./dbOperation.js");
+
+import { DBOperation } from "./dbOperation";
 
 export class ShoppingCartRepository extends DBOperation {
   constructor() {

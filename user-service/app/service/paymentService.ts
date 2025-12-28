@@ -2,9 +2,7 @@ import bodyParser from "@middy/http-json-body-parser";
 import { ErrorResponse, SuccessResponse } from "../utility/response.js";
 import { APIGatewayProxyEventV2 } from "aws-lambda";
 import { PaymentRepository } from "../repository/paymentRepository.js";
-import { autoInjectable } from "tsyringe";
 
-@autoInjectable()
 export class PaymentService {
   repository: PaymentRepository;
 

@@ -9,7 +9,6 @@ import {
 } from "../utility/response.js";
 import { APIGatewayProxyEventV2 } from "aws-lambda";
 import { ShoppingCartRepository } from "../repository/cartRepository.js";
-import { autoInjectable } from "tsyringe";
 import { plainToClass } from "class-transformer";
 import { AppValidationError } from "../utility/errors.js";
 import { VerifyToken } from "../utility/password.js";
@@ -17,7 +16,6 @@ import { CartInput } from "../models/dto/CartInput.js";
 import { CartItemModel } from "app/models/CartItemsModel.js";
 import { PullData } from "app/message-queue/index.js";
 
-@autoInjectable()
 export class CartService {
   repository: ShoppingCartRepository;
 
