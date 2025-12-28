@@ -124,29 +124,33 @@ export class ProductService {
 
   // TODO: http calls will be converted to RPC and Queue later
   async handleQueueOperation(event: APIGatewayProxyEvent) {
-    if (!event.body) {
-      return BadRequest("Request body is required");
+    try {
+      if (!event.body) {
+        return BadRequest("Request body is required");
+      }
+
+      const input = plainToClass(ServiceInput, event.body);
+      const errors = await AppValidationError(input);
+
+      if (errors && errors.length > 0) {
+        console.log("Validation errors:", errors);
+        return BadRequest(errors);
+      }
+
+      console.log("Service Input:", input);
+
+      const data = await this._repository.getProductById(input.productId);
+
+      if ("statusCode" in data) {
+        return data;
+      }
+
+      const { _id, name, price, image_url } = data;
+      console.log("Product Data:", data);
+
+      return SuccessResponse({ product_id: _id, name, price, image_url });
+    } catch (error) {
+      return InternalError(error);
     }
-
-    const input = plainToClass(ServiceInput, event.body);
-    const errors = await AppValidationError(input);
-
-    if (errors && errors.length > 0) {
-      console.log("Validation errors:", errors);
-      return BadRequest(errors);
-    }
-
-    console.log("Service Input:", input);
-
-    const data = await this._repository.getProductById(input.productId);
-
-    if ("statusCode" in data) {
-      return data;
-    }
-
-    const { _id, name, price, image_url } = data;
-    console.log("Product Data:", data);
-
-    return SuccessResponse({ product_id: _id, name, price, image_url });
   }
 }
