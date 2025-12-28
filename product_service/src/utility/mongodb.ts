@@ -1,26 +1,3 @@
-// import mongoose from "mongoose";
-
-// let conn: typeof mongoose | null = null;
-
-// export const connectDB = async (): Promise<typeof mongoose> => {
-//   if (conn != null) {
-//     console.log("Using existing MongoDB connection");
-//     return conn;
-//   }
-
-//   const uri = process.env.MONGODB_URI;
-//   if (!uri) {
-//     throw new Error("MONGODB_URI is not set in environment variables");
-//   }
-
-//   console.log("Creating new MongoDB connection...");
-//   conn = await mongoose.connect(uri, {
-//     bufferCommands: false,
-//   });
-
-//   return conn;
-// };
-
 import mongoose from "mongoose";
 
 interface MongooseCache {
@@ -40,7 +17,7 @@ export async function connectDB() {
   }
 
   if (!cached.promise) {
-    const uri = "mongodb://host.docker.internal:27017/product_service_db";
+    const uri = process.env.MONGODB_URI;
     if (!uri) {
       throw new Error("MONGODB_URI is not set");
     }
