@@ -8,9 +8,9 @@ services:
       timeout: 5s
       retries: 5
     environment:
-      - POSTGRES_PASSWORD=0000
-      - POSTGRES_USER=postgres
-      - POSTGRES_DB=user_service # This creates the DB on first startup
+      POSTGRES_PASSWORD: ${env:password}
+      POSTGRES_USER: ${env:user}
+      POSTGRES_DB: ${env:database} # This creates the DB on first startup
     ports:
       - "5433:5432"
     volumes:
