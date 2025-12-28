@@ -32,4 +32,4 @@ RUN npm run cdk synth
 EXPOSE 3000
 
 # Start the local API exactly like your dev script
-CMD ["sam", "local", "start-api", "--host", "0.0.0.0", "-t", "cdk.out/ProductServiceStack.template.json"]
+CMD ["npm", "run", "watch:container"]
