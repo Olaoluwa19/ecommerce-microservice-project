@@ -9,7 +9,9 @@
     "watch": "tsc -w",
     "test": "jest",
     "cdk": "cdk",
-    "dev": "cdk synth && sam local start-api -t cdk.out/ProductServiceStack.template.json"
+    "dev": "cdk synth && sam local start-api -t cdk.out/ProductServiceStack.template.json",
+    "dev:container": "sam local start-api --host 0.0.0.0 -t cdk.out/ProductServiceStack.template.json",
+    "watch:container": "npm run watch & sam local start-api --host 0.0.0.0 -t cdk.out/ProductServiceStack.template.json"
   },
   "devDependencies": {
     "@types/jest": "^29.5.14",
