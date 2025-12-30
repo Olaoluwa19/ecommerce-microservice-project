@@ -35,7 +35,7 @@ COPY . .
 RUN npm run build
 
 # Synthesize CDK stack using ts-node
-RUN npx ts-node --prefer-ts bin/product_service.ts synth
+RUN npx ts-node bin/product_service.ts synth
 
 # Expose port 3000 (SAM local default)
 EXPOSE 3000
