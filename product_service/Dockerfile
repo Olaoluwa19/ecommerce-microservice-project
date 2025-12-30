@@ -1,35 +1,42 @@
-# Use Node 20 Alpine as base
-FROM node:20-alpine AS base
+# Use Node 20 slim (Debian-based) – no PEP 668 issues, reliable pip installs
+FROM node:20-slim
 
-# Install Python + pip + build tools needed for AWS SAM CLI
-RUN apk add --no-cache python3 py3-pip gcc musl-dev python3-dev linux-headers
+# Install Python3, pip, and build essentials
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3 \
+    python3-pip \
+    python3-venv \
+    python3-dev \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
 
-# Install AWS SAM CLI (required for sam local start-api)
-RUN pip3 install --no-cache-dir aws-sam-cli
+# Create a virtual environment to avoid system conflicts (best practice)
+RUN python3 -m venv /opt/venv
+
+# Use the venv for pip installs
+ENV PATH="/opt/venv/bin:$PATH"
+
+# Install AWS SAM CLI inside the virtual environment
+RUN pip install --no-cache-dir aws-sam-cli
 
 # Set working directory
 WORKDIR /app
 
-# Copy package files first for better caching
-COPY package.json package-lock.json tsconfig.json ./
+# Copy package files
+COPY package*.json tsconfig.json ./
 
-# Install ALL dependencies (including devDependencies like typescript, ts-node, etc.)
+# Install Node dependencies
 RUN npm ci
 
 # Copy source code
-COPY src ./src
-COPY bin ./bin
-# If you have other folders like lib, test, etc., add them or just copy everything
 COPY . .
 
-# Build TypeScript once (tsc)
+# Build TypeScript and synthesize CDK template
 RUN npm run build
-
-# Synthesize CDK template (creates cdk.out folder needed by sam local)
 RUN npm run cdk synth
 
-# Expose port 3000 — default for sam local start-api
+# Expose port 3000 (SAM local default)
 EXPOSE 3000
 
-# Start the local API exactly like your dev script
+# Start using your container script
 CMD ["npm", "run", "watch:container"]
