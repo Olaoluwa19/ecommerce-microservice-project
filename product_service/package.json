@@ -9,12 +9,16 @@
     "watch": "tsc -w",
     "test": "jest",
     "cdk": "cdk",
-    "start": "docker compose up",
-    "stop": "docker compose down",
-    "docker:build": "docker compose up --build",
     "dev": "cdk synth && sam local start-api -t cdk.out/ProductServiceStack.template.json",
     "dev:container": "sam local start-api --host 0.0.0.0 -t cdk.out/ProductServiceStack.template.json",
-    "watch:container": "npm run watch & sam local start-api --host 0.0.0.0 -t cdk.out/ProductServiceStack.template.json"
+    "watch:container": "npm run watch & sam local start-api --host 0.0.0.0 -t cdk.out/ProductServiceStack.template.json",
+    "start": "docker compose up -d",
+    "start:foreground": "docker compose up",
+    "stop": "docker compose down",
+    "restart": "docker compose down && docker compose up -d",
+    "docker:build": "docker compose up --build -d",
+    "docker:logs": "docker compose logs -f app",
+    "docker:rebuild": "docker compose down && docker compose up --build -d"
   },
   "devDependencies": {
     "@types/jest": "^29.5.14",
