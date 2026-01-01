@@ -19,7 +19,7 @@ services:
     depends_on:
       - db
     environment:
-      MONGODB_URI: ${MONGODB_URI} # ← Fixed: correct syntax
+      MONGODB_URI: ${MONGODB_URI}
       NODE_ENV: development
       AWS_REGION: us-east-1
     volumes:
