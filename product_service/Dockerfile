@@ -17,7 +17,7 @@ RUN python3 -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
 # Install AWS SAM CLI inside the virtual environment
-RUN pip install --no-cache-dir aws-sam-cli
+RUN pip install --no-cache-dir aws-sam-cli==1.147.1
 
 # Set working directory
 WORKDIR /app
@@ -28,17 +28,20 @@ COPY package*.json tsconfig.json ./
 # Install Node dependencies
 RUN npm ci
 
+# Install esbuild for local Lambda bundling (avoids Docker bundling during synth)
+RUN npm install --global esbuild@0.21.5
+
 # Copy source code
 COPY . .
 
 # Build TypeScript and synthesize CDK template
 RUN npm run build
 
-# Synthesize CDK stack using ts-node
-RUN npx ts-node bin/product_service.ts synth
+# Synthesize CDK template (esbuild handles bundling locally)
+RUN npx cdk synth
 
-# Expose port 3000 (SAM local default)
+# Expose port 3000
 EXPOSE 3000
 
-# Start using your container script
-CMD ["npm", "run", "watch:container"]
+# Hot reload for development
+CMD ["npm", "run", "dev:container"]
