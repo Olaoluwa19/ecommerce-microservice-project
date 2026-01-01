@@ -42,7 +42,6 @@ export class ProductRepository {
     availability,
   }: ProductInput) {
     let existingProduct = (await products.findById(id)) as ProductDoc;
-    if (!existingProduct) throw new Error("Product not found");
     existingProduct.name = name;
     existingProduct.description = description;
     existingProduct.price = price;
@@ -55,11 +54,7 @@ export class ProductRepository {
 
   async deleteProduct(id: string) {
     const { category_id } = (await products.findById(id)) as ProductDoc;
-    if (!category_id) throw new Error("Category ID not found for the product");
-
-    const product = await products.findById(id);
-    if (!product) throw new Error("Product not found");
-    const deleteResult = await products.deleteOne({ _id: product._id });
+    const deleteResult = await products.deleteOne({ _id: id });
 
     return { deleteResult, category_id };
   }
