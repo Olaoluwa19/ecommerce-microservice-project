@@ -38,3 +38,5 @@ setlocal
 
 
 cdk synth && sam local start-api -t cdk.out/ProductServiceStack.template.json -p 3000
+
+--env-vars env.json

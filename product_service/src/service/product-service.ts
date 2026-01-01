@@ -13,6 +13,7 @@ import { AppValidationError } from "../utility/errors";
 import { ProductInput } from "../dto/product-input";
 import { CategoryRepository } from "../repository/category-repository";
 import { ServiceInput } from "../dto/service-input";
+import { Types } from "mongoose";
 
 export class ProductService {
   _repository: ProductRepository;
@@ -26,29 +27,29 @@ export class ProductService {
 
   async createProduct(event: APIGatewayEvent) {
     try {
-      if (!event.body) {
-        return BadRequest("Request body is required");
-      }
-      let payload;
-      try {
-        payload = JSON.parse(event.body);
-      } catch (e) {
-        return BadRequest("Invalid JSON");
-      }
-      const input = plainToClass(ProductInput, payload);
+      const input = plainToClass(ProductInput, event.body);
       const errors = await AppValidationError(input);
       if (errors && errors.length > 0) {
         console.log("Validation errors:", errors);
         return BadRequest(errors);
       }
-
+      const categoryExists = await new CategoryRepository().getCategoryById(
+        input.category_id
+      );
+      if (!Types.ObjectId.isValid(categoryExists)) {
+        return BadRequest("Invalid category ID format");
+      }
+      if (!categoryExists) {
+        return NotFound("Category not found");
+      }
       const data = await this._repository.createProduct(input);
-      const categoryProduct = await new CategoryRepository().addItem({
+      await new CategoryRepository().addItem({
         id: input.category_id,
         products: [data._id as string],
       });
-      return CreatedResponse(categoryProduct);
+      return CreatedResponse(data);
     } catch (error) {
+      console.log("Error creating product:", error);
       return InternalError(error);
     }
   }
@@ -69,6 +70,9 @@ export class ProductService {
     try {
       const productId = event.pathParameters?.id;
       if (!productId) return BadRequest("Product id is required");
+      if (!Types.ObjectId.isValid(productId)) {
+        return BadRequest("Invalid product ID format");
+      }
       const data = await this._repository.getProductById(productId);
       if (!data) {
         return NotFound("No products found");
@@ -83,7 +87,14 @@ export class ProductService {
     try {
       const productId = event.pathParameters?.id;
       if (!productId) return BadRequest("Product id is required");
-      const input = plainToClass(ProductInput, JSON.parse(event.body!));
+      if (!Types.ObjectId.isValid(productId)) {
+        return BadRequest("Invalid product ID format");
+      }
+      const existingProduct = await this._repository.getProductById(productId);
+      if (!existingProduct) {
+        return NotFound("Product not found");
+      }
+      const input = plainToClass(ProductInput, event.body);
       const errors = await AppValidationError(input);
       if (errors && errors.length > 0) {
         console.log("Validation errors:", errors);
