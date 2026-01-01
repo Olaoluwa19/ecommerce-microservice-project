@@ -49,7 +49,6 @@ export class ProductService {
       });
       return CreatedResponse(data);
     } catch (error) {
-      console.log("Error creating product:", error);
       return InternalError(error);
     }
   }
