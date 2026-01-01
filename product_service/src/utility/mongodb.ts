@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import "dotenv/config";
 
 interface MongooseCache {
   conn: typeof mongoose | null;
@@ -17,7 +18,7 @@ export async function connectDB() {
   }
 
   if (!cached.promise) {
-    const uri = process.env.MONGODB_URI;
+    const uri = "mongodb://host.docker.internal:27017/product_service_db";
     if (!uri) {
       throw new Error("MONGODB_URI is not set");
     }
