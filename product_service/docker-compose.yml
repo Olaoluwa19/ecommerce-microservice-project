@@ -8,7 +8,7 @@ services:
     volumes:
       - mongo-data:/data/db
     environment:
-      MONGO_INITDB_DATABASE: ${database_name} # ← Fixed: no "env:"
+      MONGO_INITDB_DATABASE: product_service_db
 
   app:
     build: .
@@ -19,7 +19,7 @@ services:
     depends_on:
       - db
     environment:
-      MONGODB_URI: ${MONGODB_URI}
+      MONGODB_URI: mongodb://db:27017/product_service_db
       NODE_ENV: development
       AWS_REGION: us-east-1
     volumes:
