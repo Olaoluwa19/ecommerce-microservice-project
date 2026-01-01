@@ -1,5 +1,5 @@
 import { APIGatewayEvent, APIGatewayProxyResult, Context } from "aws-lambda";
-import { ErrorResponse } from "./utility/response";
+import { BadRequest } from "./utility/response";
 import { ProductService } from "./service/product-service";
 import { ProductRepository } from "./repository/product-repository";
 import { connectDB } from "./utility/mongodb";
@@ -36,7 +36,7 @@ export const baseHandler = async (
       }
   }
 
-  return ErrorResponse(404, "requetsted method not allowed");
+  return BadRequest("requested method not allowed");
 };
 
 export const handler = middy(baseHandler)
