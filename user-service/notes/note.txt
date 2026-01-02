@@ -177,3 +177,14 @@ npm --save-dev @types/dotenv @middy/http-json-body-parser @middy/core
 TO GENERATE RANDOM SECRETE KEY:
 openssl rand -hex 32
 openssl rand -base64 48
+
+{
+  "dev": {
+    "driver": "pg",
+    "user": "user_service",
+    "password": "!user_service1234",
+    "host": "user-service.cjou00wu0dqt.us-east-1.rds.amazonaws.com",
+    "port": 5432,
+    "database": "user_service"
+  }
+}
