@@ -8,13 +8,13 @@ import {
   SuccessResponse,
 } from "../utility/response.js";
 import { APIGatewayProxyEventV2 } from "aws-lambda";
-import { ShoppingCartRepository } from "../repository/cartRepository.js";
+import { ShoppingCartRepository } from "../repository/cartRepository";
 import { plainToClass } from "class-transformer";
-import { AppValidationError } from "../utility/errors.js";
-import { VerifyToken } from "../utility/password.js";
-import { CartInput } from "../models/dto/CartInput.js";
-import { CartItemModel } from "app/models/CartItemsModel.js";
-import { PullData } from "app/message-queue/index.js";
+import { AppValidationError } from "../utility/errors";
+import { VerifyToken } from "../utility/password";
+import { CartInput } from "../models/dto/CartInput";
+import { CartItemModel } from "../models/CartItemsModel";
+import { PullData } from "../message-queue/index";
 
 export class CartService {
   repository: ShoppingCartRepository;
@@ -36,7 +36,6 @@ export class CartService {
     return ErrorResponse(404, "request Method is not supported!");
   }
 
-  // Cart Section
   async CreateCart(event: APIGatewayProxyEventV2) {
     try {
       const headers = event.headers || {};
