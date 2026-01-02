@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import "dotenv/config";
 
 interface MongooseCache {
   conn: typeof mongoose | null;
