@@ -1,10 +1,13 @@
 {
   "dev": {
-    "driver": "pg",
-    "user": "postgres",
-    "password": "0000",
-    "host": "127.0.0.1",
-    "port": 5433,
-    "database": "user_service"
+    "driver": "postgresql",
+    "user": "user_service",
+    "password": "!user_service1234",
+    "host": "user-service.cjou00wu0dqt.us-east-1.rds.amazonaws.com",
+    "port": 5432,
+    "database": "user_service",
+    "ssl": {
+      "rejectUnauthorized": false
+    }
   }
 }
