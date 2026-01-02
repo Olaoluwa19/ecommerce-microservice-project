@@ -17,4 +17,4 @@ create_migration:
 	db-migrate create $(name) --sql-file
 
 server:
-	yarn run dev
+	npm run dev
