@@ -1,76 +1,77 @@
 import { APIGatewayProxyEventV2 } from "aws-lambda";
 import middy from "@middy/core";
 import bodyParser from "@middy/http-json-body-parser";
-import { UserService } from "../service/userService.js";
-import { CartService } from "../service/cartService.js";
-import { PaymentService } from "app/service/paymentService.js";
-import { UserRepository } from "app/repository/userRepository.js";
-import { ShoppingCartRepository } from "app/repository/cartRepository.js";
-import { PaymentRepository } from "app/repository/paymentRepository.js";
+import { container } from "../container.js";
 
-const userRepository = new UserRepository();
-const service = new UserService(userRepository);
-const cartRepository = new ShoppingCartRepository();
-const cartService = new CartService(cartRepository);
-const paymentRepository = new PaymentRepository();
-const paymentService = new PaymentService(paymentRepository);
+const { userService, cartService, paymentService } = container;
 
 export const Signup = middy((event: APIGatewayProxyEventV2) => {
-  return service.CreateUser(event);
+  return userService.CreateUser(event);
 }).use(bodyParser());
 
 export const Login = middy((event: APIGatewayProxyEventV2) => {
-  return service.UserLogin(event);
+  return userService.UserLogin(event);
 }).use(bodyParser());
 
 export const Verify = middy((event: APIGatewayProxyEventV2) => {
   const httpMethod = event.requestContext.http.method.toLowerCase();
   if (httpMethod === "post") {
-    return service.VerifyUser(event);
+    return userService.VerifyUser(event);
   } else if (httpMethod === "get") {
-    return service.GetVerificationToken(event);
+    return userService.GetVerificationToken(event);
   } else {
-    return service.ResponseWithError(event);
+    return userService.ResponseWithError(event);
   }
-}).use(service.conditionalBodyParser());
+}).use(userService.conditionalBodyParser());
 
 export const Profile = middy((event: APIGatewayProxyEventV2) => {
   const httpMethod = event.requestContext.http.method.toLowerCase();
   if (httpMethod === "post") {
-    return service.CreateProfile(event);
+    return userService.CreateProfile(event);
   } else if (httpMethod === "put") {
-    return service.EditProfile(event);
+    return userService.EditProfile(event);
   } else if (httpMethod === "get") {
-    return service.GetProfile(event);
+    return userService.GetProfile(event);
   } else {
-    return service.ResponseWithError(event);
+    return userService.ResponseWithError(event);
   }
-}).use(service.conditionalBodyParser());
+}).use(userService.conditionalBodyParser());
 
 export const Cart = middy((event: APIGatewayProxyEventV2) => {
   const httpMethod = event.requestContext.http.method.toLowerCase();
-  if (httpMethod === "post") {
-    return cartService.CreateCart(event);
-  } else if (httpMethod === "put") {
-    return cartService.UpdateCart(event);
-  } else if (httpMethod === "get") {
-    return cartService.GetCart(event);
-  } else if (httpMethod === "delete") {
-    return cartService.DeleteCart(event);
-  } else {
-    return cartService.ResponseWithError(event);
-  }
-}).use(service.conditionalBodyParser());
+  if (httpMethod === "post") return cartService.CreateCart(event);
+  if (httpMethod === "put") return cartService.UpdateCart(event);
+  if (httpMethod === "get") return cartService.GetCart(event);
+  if (httpMethod === "delete") return cartService.DeleteCart(event);
+  return cartService.ResponseWithError(event);
+  // const httpMethod = event.requestContext.http.method.toLowerCase();
+  // if (httpMethod === "post") {
+  //   return cartService.CreateCart(event);
+  // } else if (httpMethod === "put") {
+  //   return cartService.UpdateCart(event);
+  // } else if (httpMethod === "get") {
+  //   return cartService.GetCart(event);
+  // } else if (httpMethod === "delete") {
+  //   return cartService.DeleteCart(event);
+  // } else {
+  //   return cartService.ResponseWithError(event);
+  // }
+}).use(userService.conditionalBodyParser());
 
 export const Payment = middy((event: APIGatewayProxyEventV2) => {
   const httpMethod = event.requestContext.http.method.toLowerCase();
-  if (httpMethod === "post") {
-    return paymentService.CreatePaymentMethod(event);
-  } else if (httpMethod === "put") {
-    return paymentService.UpdatePaymentMethod(event);
-  } else if (httpMethod === "get") {
-    return paymentService.GetPaymentMethod(event);
-  } else {
-    return paymentService.ResponseWithError(event);
-  }
-}).use(service.conditionalBodyParser());
+  if (httpMethod === "post") return paymentService.CreatePaymentMethod(event);
+  if (httpMethod === "put") return paymentService.UpdatePaymentMethod(event);
+  if (httpMethod === "get") return paymentService.GetPaymentMethod(event);
+  return paymentService.ResponseWithError(event);
+  // const httpMethod = event.requestContext.http.method.toLowerCase();
+  // if (httpMethod === "post") {
+  //   return paymentService.CreatePaymentMethod(event);
+  // } else if (httpMethod === "put") {
+  //   return paymentService.UpdatePaymentMethod(event);
+  // } else if (httpMethod === "get") {
+  //   return paymentService.GetPaymentMethod(event);
+  // } else {
+  //   return paymentService.ResponseWithError(event);
+  // }
+}).use(userService.conditionalBodyParser());
