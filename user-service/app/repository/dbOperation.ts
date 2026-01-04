@@ -1,17 +1,17 @@
-import { DBClient } from "../utility/databaseClient.js";
+// app/repository/dbOperation.ts
+import { db } from "../utility/databaseClient.js"; // ← Import the singleton
 
 export class DBOperation {
   constructor() {}
 
-  async executeQuery(queryString: string, values: unknown[]) {
+  async executeQuery(queryString: string, values: unknown[] = []) {
     try {
-      const client = DBClient();
-      await client.connect();
-      const result = await client.query(queryString, values);
-      await client.end();
+      // Use the already-connected shared client
+      const result = await db.query(queryString, values);
       return result;
     } catch (error) {
-      throw error;
+      console.error("Query failed:", queryString, values, error);
+      throw error; // Let caller handle it
     }
   }
 }
