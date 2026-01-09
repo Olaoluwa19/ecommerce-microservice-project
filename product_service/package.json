@@ -9,6 +9,7 @@
     "watch": "tsc -w",
     "test": "jest",
     "cdk": "cdk",
+    "deploy": "cdk deploy --verbose --trace",
     "dev": "cdk synth && sam local start-api -t cdk.out/ProductServiceStack.template.json",
     "dev:container": "sam local start-api --host 0.0.0.0 -t cdk.out/ProductServiceStack.template.json",
     "watch:container": "npm run watch & sam local start-api --host 0.0.0.0 -t cdk.out/ProductServiceStack.template.json",
