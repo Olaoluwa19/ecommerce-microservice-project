@@ -24,7 +24,7 @@ client
 // Export the already-connected singleton client
 export const db = client;
 
-// Graceful shutdown (good for local dev)
+// Graceful shutdown
 process.on("SIGINT", async () => {
   console.log("Closing DB connection...");
   await client.end();
