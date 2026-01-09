@@ -44,18 +44,6 @@ export const Cart = middy((event: APIGatewayProxyEventV2) => {
   if (httpMethod === "get") return cartService.GetCart(event);
   if (httpMethod === "delete") return cartService.DeleteCart(event);
   return cartService.ResponseWithError(event);
-  // const httpMethod = event.requestContext.http.method.toLowerCase();
-  // if (httpMethod === "post") {
-  //   return cartService.CreateCart(event);
-  // } else if (httpMethod === "put") {
-  //   return cartService.UpdateCart(event);
-  // } else if (httpMethod === "get") {
-  //   return cartService.GetCart(event);
-  // } else if (httpMethod === "delete") {
-  //   return cartService.DeleteCart(event);
-  // } else {
-  //   return cartService.ResponseWithError(event);
-  // }
 }).use(userService.conditionalBodyParser());
 
 export const Payment = middy((event: APIGatewayProxyEventV2) => {
@@ -64,14 +52,4 @@ export const Payment = middy((event: APIGatewayProxyEventV2) => {
   if (httpMethod === "put") return paymentService.UpdatePaymentMethod(event);
   if (httpMethod === "get") return paymentService.GetPaymentMethod(event);
   return paymentService.ResponseWithError(event);
-  // const httpMethod = event.requestContext.http.method.toLowerCase();
-  // if (httpMethod === "post") {
-  //   return paymentService.CreatePaymentMethod(event);
-  // } else if (httpMethod === "put") {
-  //   return paymentService.UpdatePaymentMethod(event);
-  // } else if (httpMethod === "get") {
-  //   return paymentService.GetPaymentMethod(event);
-  // } else {
-  //   return paymentService.ResponseWithError(event);
-  // }
 }).use(userService.conditionalBodyParser());
