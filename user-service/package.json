@@ -8,6 +8,7 @@
     "dev": "serverless offline",
     "build": "npm run clean && npm run dev",
     "deploy": "sls deploy --verbose",
+    "destroy": "sls remove --verbose",
     "watch": "docker-compose up -d && serverless offline",
     "docker:build": "docker-compose up --build",
     "docker:start": "docker-compose up -d",
