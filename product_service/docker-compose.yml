@@ -8,10 +8,12 @@ services:
     volumes:
       - mongo-data:/data/db
     environment:
-      MONGO_INITDB_DATABASE: product_service_db
+      MONGO_INITDB_DATABASE: ${database_name}
 
   app:
     build: .
+    env_file:
+      - .env
     container_name: product_service_app
     restart: unless-stopped
     ports:
@@ -19,7 +21,7 @@ services:
     depends_on:
       - db
     environment:
-      MONGODB_URI: mongodb://db:27017/product_service_db
+      MONGODB_URI: ${MONGODB_URI}
       NODE_ENV: development
       AWS_REGION: us-east-1
     volumes:
