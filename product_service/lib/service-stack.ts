@@ -1,3 +1,4 @@
+import "dotenv/config";
 import { Duration } from "aws-cdk-lib";
 import { Runtime } from "aws-cdk-lib/aws-lambda";
 import {
@@ -27,6 +28,8 @@ export class ServiceStack extends Construct {
       },
       environment: {
         BUCKET_NAME: props.bucket,
+        MONGODB_URI: process.env.MONGODB_URI || "",
+        database_name: process.env.database_name || "",
       },
       runtime: Runtime.NODEJS_18_X,
       timeout: Duration.seconds(10),
