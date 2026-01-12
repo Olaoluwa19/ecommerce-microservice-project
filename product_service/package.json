@@ -10,7 +10,9 @@
     "test": "jest",
     "cdk": "cdk",
     "deploy": "cdk deploy --verbose --trace",
-    "dev": "cdk synth && sam local start-api -t cdk.out/ProductServiceStack.template.json",
+    "destroy": "cdk destroy --verbose --force",
+    "dev_1": "cdk synth && sam local start-api -t cdk.out/ProductServiceStack.template.json",
+    "dev": "cdk synth && sam local start-api -t cdk.out/ProductServiceStack.template.json --env-vars env.json",
     "dev:container": "sam local start-api --host 0.0.0.0 -t cdk.out/ProductServiceStack.template.json",
     "watch:container": "npm run watch & sam local start-api --host 0.0.0.0 -t cdk.out/ProductServiceStack.template.json",
     "start": "docker compose up -d",
@@ -43,6 +45,7 @@
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.2",
     "constructs": "^10.0.0",
+    "dotenv": "^17.2.3",
     "mongoose": "^8.19.3",
     "uuid": "^13.0.0"
   },
