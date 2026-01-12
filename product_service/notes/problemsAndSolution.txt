@@ -1,0 +1,32 @@
+SAM LOCAL not being able to read .env file
+
+{"errorType":"Error","errorMessage":"MONGODB_URI is not set","stack":["Error: MONGODB_URI is not set","    at connectDB (/var/task/index.js:105011:13)","    at baseHandler (/var/task/index.js:105401:9)","    at runRequest (/var/task/index.js:105181:9)","    at async Runtime.middy2 [as handler] (/var/task/index.js:105115:22)"]}
+
+
+solution: 
+
+1. created a env.json file:
+{
+  "Parameters": {
+    "MONGODB_URI": "mongodb+srv://oladapooluwadurotimi_db_user:EMX7xAMXIaCTJTil@cluster0.s8ilwab.mongodb.net/?appName=Cluster0",
+    "database_name": "product_service_db"
+  }
+}
+
+2. added environment variable to service stack function:
+const nodeJsFunctionProps: NodejsFunctionProps = {
+      bundling: {
+        externalModules: ["aws-sdk"],
+      },
+      environment: {
+        BUCKET_NAME: props.bucket,
+        MONGODB_URI: process.env.MONGODB_URI || "",
+        database_name: process.env.database_name || "",
+      },
+      runtime: Runtime.NODEJS_18_X,
+      timeout: Duration.seconds(10),
+    };
+
+3. updated package.json script to read files from env.json file
+"dev": "cdk synth && sam local start-api -t cdk.out/ProductServiceStack.template.json --env-vars env.json",
+    "dev:c
