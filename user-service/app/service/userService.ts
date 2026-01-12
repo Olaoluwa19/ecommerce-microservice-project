@@ -67,7 +67,7 @@ export class UserService {
         email: input.email,
         password: hashedPassword,
         phone: input.phone,
-        userType: "BUYER",
+        userType: input.userType,
         salt: salt,
       });
       return CreatedResponse(data);
