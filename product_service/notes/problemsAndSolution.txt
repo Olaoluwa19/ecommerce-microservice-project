@@ -1,11 +1,11 @@
-SAM LOCAL not being able to read .env file
+1. SAM LOCAL not being able to read .env file
 
 {"errorType":"Error","errorMessage":"MONGODB_URI is not set","stack":["Error: MONGODB_URI is not set","    at connectDB (/var/task/index.js:105011:13)","    at baseHandler (/var/task/index.js:105401:9)","    at runRequest (/var/task/index.js:105181:9)","    at async Runtime.middy2 [as handler] (/var/task/index.js:105115:22)"]}
 
 
 solution: 
 
-1. created a env.json file:
+1.1. created a env.json file:
 {
   "Parameters": {
     "MONGODB_URI": "mongodb+srv://oladapooluwadurotimi_db_user:EMX7xAMXIaCTJTil@cluster0.s8ilwab.mongodb.net/?appName=Cluster0",
@@ -13,7 +13,7 @@ solution:
   }
 }
 
-2. added environment variable to service stack function:
+1.2. added environment variable to service stack function:
 const nodeJsFunctionProps: NodejsFunctionProps = {
       bundling: {
         externalModules: ["aws-sdk"],
@@ -27,6 +27,18 @@ const nodeJsFunctionProps: NodejsFunctionProps = {
       timeout: Duration.seconds(10),
     };
 
-3. updated package.json script to read files from env.json file
+1.3. updated package.json script to read files from env.json file
 "dev": "cdk synth && sam local start-api -t cdk.out/ProductServiceStack.template.json --env-vars env.json",
     "dev:c
+
+
+2. MongoServerError: bad auth error in your AWS Lambda environment
+
+
+cause:
+Special Character Truncation in mongodb password
+
+fix: 
+
+2.1 Wrap the value in single quotes in your .env file
+2.2 encode passwords in your connection strings
