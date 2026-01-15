@@ -28,8 +28,8 @@ export class ServiceStack extends Construct {
       },
       environment: {
         BUCKET_NAME: props.bucket,
-        MONGODB_URI: process.env.MONGODB_URI || "",
-        database_name: process.env.database_name || "",
+        MONGODB_USERNAME: process.env.MONGODB_USERNAME || "",
+        MONGODB_PASSWORD: process.env.MONGODB_PASSWORD || "",
       },
       runtime: Runtime.NODEJS_18_X,
       timeout: Duration.seconds(10),
