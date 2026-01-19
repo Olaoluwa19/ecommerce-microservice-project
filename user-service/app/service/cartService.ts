@@ -6,13 +6,14 @@ import {
   InternalError,
   NotFound,
   SuccessResponse,
+  Unauthorized,
 } from "../utility/response.js";
 import { APIGatewayProxyEventV2 } from "aws-lambda";
 import { ShoppingCartRepository } from "../repository/cartRepository";
 import { plainToClass } from "class-transformer";
 import { AppValidationError } from "../utility/errors";
 import { VerifyToken } from "../utility/password";
-import { CartInput } from "../models/dto/CartInput";
+import { CartInput, UpdateCartInput } from "../models/dto/CartInput";
 import { CartItemModel } from "../models/CartItemsModel";
 import { PullData } from "../message-queue/index";
 
@@ -40,7 +41,7 @@ export class CartService {
     try {
       const headers = event.headers || {};
       const token = headers.authorization || headers.Authorization;
-      console.log("Headers:", event.headers);
+
       if (!token) {
         return NotFound("Authorization header missing");
       }
@@ -64,13 +65,13 @@ export class CartService {
       }
       //check of item exist in cart and update quantity
       let currentProduct = await this.repository.findCartItemByProductId(
-        input.productId
+        input.productId,
       );
       if (currentProduct) {
         //if exist update quantity
         await this.repository.updateCartItemByProductId(
           input.productId,
-          (currentProduct.item_qty += input.qty)
+          (currentProduct.item_qty += input.qty),
         );
       } else {
         // if does not, call product service to get information
@@ -91,7 +92,7 @@ export class CartService {
 
       // Finally, return the created cart
       const cartItems = await this.repository.findCartItemsByCartId(
-        currentCart.cart_id
+        currentCart.cart_id,
       );
 
       return CreatedResponse(cartItems);
@@ -100,15 +101,85 @@ export class CartService {
     }
   }
 
-  async UpdateCart(event: APIGatewayProxyEventV2) {
-    return SuccessResponse({ message: "response from Update Cart" });
+  async GetCart(event: APIGatewayProxyEventV2) {
+    try {
+      const headers = event.headers || {};
+      const token = headers.authorization || headers.Authorization;
+      if (!token) {
+        return Unauthorized("Authorization header missing");
+      }
+      const payload = await VerifyToken(token);
+      if (!payload) return BadRequest("Authorization failed");
+
+      const result = await this.repository.findCartItems(payload.user_id);
+      return SuccessResponse(result);
+    } catch (error) {
+      return InternalError(error);
+    }
   }
 
-  async GetCart(event: APIGatewayProxyEventV2) {
-    return SuccessResponse({ message: "response from Get Cart" });
+  async UpdateCart(event: APIGatewayProxyEventV2) {
+    try {
+      const headers = event.headers || {};
+      const token = headers.authorization || headers.Authorization;
+
+      if (!token) {
+        return NotFound("Authorization header missing");
+      }
+      const payload = await VerifyToken(token);
+      if (!payload) return BadRequest("Authorization failed");
+      const cartItemId = Number(event.pathParameters?.id);
+      if (!cartItemId) {
+        return BadRequest("cartItemId path parameter is required");
+      }
+
+      const input = plainToClass(UpdateCartInput, event.body);
+      const errors = await AppValidationError(input);
+      if (errors && errors.length > 0) {
+        console.log("Validation errors:", errors);
+        return BadRequest(errors);
+      }
+      const cartItem = await this.repository.updateCartItemById(
+        cartItemId,
+        input.qty,
+      );
+
+      if (!cartItem) {
+        return NotFound("Cart item not found");
+      }
+
+      return CreatedResponse(cartItem);
+    } catch (error) {
+      return InternalError(error);
+    }
   }
 
   async DeleteCart(event: APIGatewayProxyEventV2) {
-    return SuccessResponse({ message: "response from Get Cart" });
+    try {
+      const headers = event.headers || {};
+      const token = headers.authorization || headers.Authorization;
+      if (!token) {
+        return NotFound("Authorization header missing");
+      }
+      const payload = await VerifyToken(token);
+      if (!payload) return BadRequest("Authorization failed");
+      const cartItemId = Number(event.pathParameters?.id);
+      if (!cartItemId) {
+        return BadRequest("cartItemId path parameter is required");
+      }
+
+      const deletedItem = await this.repository.deleteCartItem(cartItemId);
+      return SuccessResponse(deletedItem);
+    } catch (error) {
+      return InternalError(error);
+    }
+  }
+
+  async CollectPayment(event: APIGatewayProxyEventV2) {
+    try {
+      return SuccessResponse({ msg: "Payment processing..." });
+    } catch (error) {
+      return InternalError(error);
+    }
   }
 }
