@@ -107,7 +107,6 @@ export class UserService {
     try {
       const headers = event.headers || {};
       const token = headers.authorization || headers.Authorization;
-      console.log("Headers:", event.headers);
 
       if (!token) {
         return Unauthorized("Authorization header missing");
@@ -140,7 +139,6 @@ export class UserService {
     try {
       const headers = event.headers || {};
       const token = headers.authorization || headers.Authorization;
-      console.log("Headers:", event.headers);
 
       if (!token) {
         return Unauthorized("Authorization header missing");
@@ -190,7 +188,7 @@ export class UserService {
     try {
       const headers = event.headers || {};
       const token = headers.authorization || headers.Authorization;
-      console.log("Headers:", event.headers);
+
       if (!token) {
         return Unauthorized("Authorization header missing");
       }
@@ -220,7 +218,7 @@ export class UserService {
     try {
       const headers = event.headers || {};
       const token = headers.authorization || headers.Authorization;
-      console.log("Headers:", event.headers);
+
       if (!token) {
         return Unauthorized("Authorization header missing");
       }
@@ -240,7 +238,6 @@ export class UserService {
     try {
       const headers = event.headers || {};
       const token = headers.authorization || headers.Authorization;
-      console.log("Headers:", event.headers);
 
       if (!token) {
         return NotFound("Authorization header missing");
