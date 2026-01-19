@@ -1,4 +1,3 @@
-// app/container.ts
 import { UserRepository } from "./repository/userRepository";
 import { ShoppingCartRepository } from "./repository/cartRepository.js";
 import { PaymentRepository } from "./repository/paymentRepository.js";
@@ -15,7 +14,6 @@ const userService = new UserService(userRepository);
 const cartService = new CartService(cartRepository);
 const paymentService = new PaymentService(paymentRepository);
 
-// Export them
 export const container = {
   userService,
   cartService,
