@@ -39,12 +39,18 @@ export const Profile = middy((event: APIGatewayProxyEventV2) => {
 
 export const Cart = middy((event: APIGatewayProxyEventV2) => {
   const httpMethod = event.requestContext.http.method.toLowerCase();
-  if (httpMethod === "post") return cartService.CreateCart(event);
-  if (httpMethod === "put") return cartService.UpdateCart(event);
-  if (httpMethod === "get") return cartService.GetCart(event);
-  if (httpMethod === "delete") return cartService.DeleteCart(event);
-  return cartService.ResponseWithError(event);
-}).use(userService.conditionalBodyParser());
+  if (httpMethod === "post") {
+    return cartService.CreateCart(event);
+  } else if (httpMethod === "put") {
+    return cartService.UpdateCart(event);
+  } else if (httpMethod === "get") {
+    return cartService.GetCart(event);
+  } else if (httpMethod === "delete") {
+    return cartService.DeleteCart(event);
+  } else {
+    return cartService.ResponseWithError(event);
+  }
+}).use(cartService.conditionalBodyParser());
 
 export const Payment = middy((event: APIGatewayProxyEventV2) => {
   const httpMethod = event.requestContext.http.method.toLowerCase();
@@ -52,4 +58,4 @@ export const Payment = middy((event: APIGatewayProxyEventV2) => {
   if (httpMethod === "put") return paymentService.UpdatePaymentMethod(event);
   if (httpMethod === "get") return paymentService.GetPaymentMethod(event);
   return paymentService.ResponseWithError(event);
-}).use(userService.conditionalBodyParser());
+}).use(paymentService.conditionalBodyParser());
