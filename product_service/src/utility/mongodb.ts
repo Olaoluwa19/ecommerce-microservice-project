@@ -17,7 +17,16 @@ export async function connectDB() {
   }
 
   if (!cached.promise) {
-    const uri = process.env.MONGODB_URI;
+    const rawPassword = process.env.MONGODB_PASSWORD;
+
+    if (!rawPassword) {
+      throw new Error(
+        "Missing required environment variable: MONGODB_PASSWORD"
+      );
+    }
+    const encodedPassword = encodeURIComponent(rawPassword);
+
+    const uri = `mongodb+srv://${process.env.MONGODB_USERNAME}:${encodedPassword}@cluster0.s8ilwab.mongodb.net/product_service_db?retryWrites=true&w=majority&authSource=admin&appName=Cluster0`;
     if (!uri) {
       throw new Error("MONGODB_URI is not set");
     }
