@@ -20,6 +20,13 @@ provider:
                 database: ${env:database}
                 password: ${env:password}
                 port: ${env:port}
+                SNS_TOPIC: { Ref: CustomerTopic }
+        iamRoleStatements:
+              - Effect: "Allow"
+                Action:
+                      - "sns:Publish"
+                Resource:
+                      - Ref: CustomerTopic
 
 custom:
         stage: "dev"
@@ -88,5 +95,28 @@ functions:
                                 path: /payment
                                 method: get
 
+        order:
+                handler: app/handler.CollectPayment
+                events:
+                      - httpApi:
+                                path: /place-order
+                                method: post
+
 plugins:
       - serverless-offline
+
+resources:
+        Resources:
+                CustomerTopic:
+                        Type: AWS::SNS::Topic
+                        Properties:
+                                DisplayName: "Customer SNS Topic description"
+                                TopicName: CustomerTopic
+        # Output the SNS Topic ARN  - for later use
+        Outputs:
+                CustomerTopicInfo:
+                        Description: customer-topic
+                        Value:
+                                Ref: CustomerTopic
+                        Export:
+                                Name: customer-topic
