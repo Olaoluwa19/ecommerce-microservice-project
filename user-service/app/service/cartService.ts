@@ -1,4 +1,5 @@
 import bodyParser from "@middy/http-json-body-parser";
+import aws from "aws-sdk";
 import {
   BadRequest,
   CreatedResponse,
@@ -177,7 +178,37 @@ export class CartService {
 
   async CollectPayment(event: APIGatewayProxyEventV2) {
     try {
-      return SuccessResponse({ msg: "Payment processing..." });
+      // initialize payment gateway
+      const headers = event.headers || {};
+      const token = headers.authorization || headers.Authorization;
+      if (!token) {
+        return Unauthorized("Authorization header missing");
+      }
+
+      // autheticate payment confirmation
+
+      // get cart items
+      const payload = await VerifyToken(token);
+      if (!payload) return BadRequest("Authorization failed");
+
+      const cartItems = await this.repository.findCartItems(payload.user_id);
+
+      // send SNS topic to create order [transaction microservice] => email to user
+      const params = {
+        Message: JSON.stringify(cartItems),
+        TopicArn: process.env.SNS_TOPIC || "",
+        MessageAttributes: {
+          actionType: {
+            DataType: "String",
+            StringValue: "place_order",
+          },
+        },
+      };
+      const sns = new aws.SNS();
+      const response = await sns.publish(params).promise();
+
+      //send tentative message to user
+      return SuccessResponse({ msg: "Payment processing...", response });
     } catch (error) {
       return InternalError(error);
     }
