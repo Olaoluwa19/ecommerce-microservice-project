@@ -1,6 +1,8 @@
 # "service" is the name of this project. This will also be added to your AWS resource names.
 service: user-service
 
+useDotenv: true
+
 provider:
         name: aws
         runtime: nodejs20.x
@@ -51,50 +53,73 @@ functions:
                 events:
                       - httpApi:
                                 path: /verify
-                                method: get
+                                method: post
+        get-verification-code:
+                handler: app/handler.GetVerificationCode
+                events:
                       - httpApi:
                                 path: /verify
-                                method: post
-        profile:
-                handler: app/handler.Profile
+                                method: get
+        create-profile:
+                handler: app/handler.CreateProfile
                 events:
                       - httpApi:
                                 path: /user
                                 method: post
+        edit-profile:
+                handler: app/handler.EditProfile
+                events:
                       - httpApi:
-                                path: /user
+                                path: /user/{id}
                                 method: put
+        get-profile:
+                handler: app/handler.GetProfile
+                events:
                       - httpApi:
                                 path: /user
                                 method: get
-        cart:
-                handler: app/handler.Cart
+        create-cart:
+                handler: app/handler.CreateCart
                 events:
                       - httpApi:
                                 path: /cart
                                 method: post
+        edit-cart:
+                handler: app/handler.EditCart
+                events:
                       - httpApi:
                                 path: /cart/{id}
                                 method: put
+        get-cart:
+                handler: app/handler.GetCart
+                events:
                       - httpApi:
                                 path: /cart
                                 method: get
+        delete-cart:
+                handler: app/handler.DeleteCart
+                events:
                       - httpApi:
                                 path: /cart/{id}
                                 method: delete
-        payment:
-                handler: app/handler.Payment
+        create-payment:
+                handler: app/handler.CreatePayment
                 events:
                       - httpApi:
                                 path: /payment
                                 method: post
+        edit-payment:
+                handler: app/handler.EditPayment
+                events:
                       - httpApi:
                                 path: /payment
                                 method: put
+        get-payment:
+                handler: app/handler.EditPayment
+                events:
                       - httpApi:
                                 path: /payment
                                 method: get
-
         order:
                 handler: app/handler.CollectPayment
                 events:
@@ -104,6 +129,9 @@ functions:
 
 plugins:
       - serverless-offline
+
+package:
+        individually: true
 
 resources:
         Resources:
