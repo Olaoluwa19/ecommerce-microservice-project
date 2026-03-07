@@ -3,7 +3,7 @@ import { categories, CategoryDoc } from "../models";
 import { BadRequest, InternalError, NotFound } from "../utility/response";
 
 export class CategoryRepository {
-  cconstructor() {}
+  constructor() {}
 
   async createCategory({ name, parentId, imageUrl }: CategoryInput) {
     try {
@@ -16,7 +16,7 @@ export class CategoryRepository {
       });
       if (parentId) {
         const parentCategory = (await categories.findById(
-          parentId
+          parentId,
         )) as CategoryDoc;
         parentCategory.subCategories = [
           ...parentCategory.subCategories,
@@ -131,7 +131,7 @@ export class CategoryRepository {
         return NotFound("Category not found");
       }
       const excludeProducts = category.products.filter(
-        (item) => !products.includes(item)
+        (item) => !products.includes(item),
       );
       category.products = excludeProducts;
       await category.save();
