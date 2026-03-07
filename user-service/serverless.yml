@@ -120,18 +120,25 @@ functions:
                       - httpApi:
                                 path: /payment
                                 method: get
-        order:
+        collect-payment:
                 handler: app/handler.CollectPayment
                 events:
                       - httpApi:
-                                path: /place-order
+                                path: /collect-payment
+                                method: post
+
+        create-order:
+                handler: app/handler.CreateOrder
+                events:
+                      - httpApi:
+                                path: /order
                                 method: post
 
 plugins:
       - serverless-offline
 
-package:
-        individually: true
+# package:
+#         individually: true
 
 resources:
         Resources:
