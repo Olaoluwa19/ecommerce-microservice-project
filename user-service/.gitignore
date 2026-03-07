@@ -7,6 +7,5 @@ dist/
 *.js.map
 *.d.ts
 .env
-notes/note.txt
-note.txt
 database.json
+undefined
