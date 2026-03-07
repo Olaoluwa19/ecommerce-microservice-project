@@ -5,7 +5,8 @@
   "main": "src/index.ts",
   "scripts": {
     "clean": "rm -rf .serverless",
-    "dev": "serverless offline",
+    "dev_1": "serverless offline",
+    "dev": "sls offline start --reloadHandler --noPrependStageInUrl",
     "build": "npm run clean && npm run dev",
     "deploy": "sls deploy --verbose",
     "destroy": "sls remove --verbose",
