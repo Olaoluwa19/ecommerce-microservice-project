@@ -1,6 +1,5 @@
 import { APIGatewayProxyEventV2 } from "aws-lambda";
 import middy from "@middy/core";
-import bodyParser from "@middy/http-json-body-parser";
 import { container } from "../container.js";
 
 const { cartService } = container;
